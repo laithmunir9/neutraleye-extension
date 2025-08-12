@@ -2,7 +2,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #fafafa;
   color: #333;
-  width: 300px; /* bigger extension size */
+  width: 300px; 
   padding: 16px;
   margin: 0;
 }
@@ -14,7 +14,7 @@ h3 {
 }
 
 .powered {
-  font-size: 14px; /* slightly bigger */
+  font-size: 14px; 
   color: #666;
   margin-bottom: 12px;
 }
@@ -39,10 +39,10 @@ button#analyze {
 
 #result-box {
   margin-top: 12px;
-  background: #f0f0f0;         /* light gray background */
-  border: 1px solid #ddd;      /* subtle border */
-  border-radius: 8px;          /* rounded corners */
-  padding: 10px;               /* space inside */
+  background: #f0f0f0;        
+  border: 1px solid #ddd;      
+  border-radius: 8px;          
+  padding: 10px;               
 }
 
 #result-text {
@@ -52,25 +52,21 @@ button#analyze {
   padding-top: 0;
 }
 
-/* ✅ NEW: remove space above first header in result box */
 #result-text h3:first-child,
 #result-text strong:first-child {
   margin-top: 0;
 }
 
-/* ✅ NEW: Ensure bold headers like “Bias Level:” are on their own line with spacing */
 #result-text strong {
   display: block;
   margin: 12px 0 4px;
 }
 
-/* ✅ Truly remove space above first visible element in result box */
 #result-text > *:first-child {
   margin-top: 0 !important;
   padding-top: 0 !important;
 }
 
-/* ✅ Remove space below last element inside result box */
 #result-text > *:last-child {
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
