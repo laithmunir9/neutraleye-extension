@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loading = document.getElementById("loading");
 
   analyzeBtn.addEventListener("click", () => {
-    console.log("🟢 Analyze button clicked");
+  
 
     resultText.innerHTML = "";
     resultBox.style.display = "none";
