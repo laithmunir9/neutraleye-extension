@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bias Checker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h3>Bias Checker</h3>
+  <div class="powered">Powered by AI</div>
+  <button id="analyze">Analyze</button>
+
+  <div id="loading" style="display:none;">Reading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+
+  <div id="result-box" style="display:none;">
+    <div id="result-text"></div>
+  </div>
+
+  <script src="marked.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

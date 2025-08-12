@@ -1,0 +1,77 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #fafafa;
+  color: #333;
+  width: 300px; /* bigger extension size */
+  padding: 16px;
+  margin: 0;
+}
+
+h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.powered {
+  font-size: 14px; /* slightly bigger */
+  color: #666;
+  margin-bottom: 12px;
+}
+
+button#analyze {
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  background-color: #333;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#loading {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #555;
+}
+
+#result-box {
+  margin-top: 12px;
+  background: #f0f0f0;         /* light gray background */
+  border: 1px solid #ddd;      /* subtle border */
+  border-radius: 8px;          /* rounded corners */
+  padding: 10px;               /* space inside */
+}
+
+#result-text {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* ✅ NEW: remove space above first header in result box */
+#result-text h3:first-child,
+#result-text strong:first-child {
+  margin-top: 0;
+}
+
+/* ✅ NEW: Ensure bold headers like “Bias Level:” are on their own line with spacing */
+#result-text strong {
+  display: block;
+  margin: 12px 0 4px;
+}
+
+/* ✅ Truly remove space above first visible element in result box */
+#result-text > *:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* ✅ Remove space below last element inside result box */
+#result-text > *:last-child {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
