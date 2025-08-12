@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ✅ Ensure marked is loaded safely
+  
   const marked = window.marked || { parse: (text) => text };
 
   const analyzeBtn = document.getElementById("analyze");
@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const loading = document.getElementById("loading");
 
   analyzeBtn.addEventListener("click", () => {
-    console.log("🟢 Analyze button clicked");
 
     resultText.innerHTML = "";
     resultBox.style.display = "none";
@@ -17,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tabId = tabs[0].id;
 
-      // 🆕 Inject content.js dynamically
       chrome.scripting.executeScript({
         target: { tabId },
         files: ["content.js"]
@@ -30,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // Then send message to content.js
         chrome.tabs.sendMessage(tabId, { action: "getText" }, async (response) => {
           if (chrome.runtime.lastError) {
             console.error("⚠️ Runtime error:", chrome.runtime.lastError?.message || chrome.runtime.lastError);
@@ -62,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
             resultText.innerHTML = html;
             resultBox.style.display = "block";
 
-            // Make all links open in new tab
             const links = resultBox.querySelectorAll('a');
             links.forEach(link => link.setAttribute('target', '_blank'));
 
