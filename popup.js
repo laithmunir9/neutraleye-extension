@@ -8,13 +8,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const loading = document.getElementById("loading");
 
   analyzeBtn.addEventListener("click", () => {
-
     resultText.innerHTML = "";
     resultBox.style.display = "none";
     loading.style.display = "block";
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tabId = tabs[0].id;
+      const tab = tabs[0];
+      const tabId = tab.id;
+      const url = tab.url || "";
+
+      const restrictedPatterns = [
+        /^chrome:\/\//i,
+        /^chrome-extension:\/\//i,
+        /^edge:\/\//i,
+        /^about:/i,
+        /^file:\/\//i,
+        /^https:\/\/chrome.google.com\/webstore/i
+      ];
+
+      if (restrictedPatterns.some((pattern) => pattern.test(url))) {
+        console.warn("⚠️ Injection skipped: Restricted page", url);
+        loading.style.display = "none";
+        resultText.innerHTML = "⚠️ Could not analyze this page. Please open a real article or website and try again.";
+        resultBox.style.display = "block";
+        return;
+      }
 
       chrome.scripting.executeScript({
         target: { tabId },
