@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ];
 
       if (restrictedPatterns.some((pattern) => pattern.test(url))) {
-        console.warn("⚠️ Injection skipped: Restricted page", url);
         loading.style.display = "none";
         resultText.innerHTML = "⚠️ Could not analyze this page. Please open a real article or website and try again.";
         resultBox.style.display = "block";
