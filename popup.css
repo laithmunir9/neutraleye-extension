@@ -39,8 +39,8 @@ button#analyze {
 
 #result-box {
   margin-top: 12px;
-  background: #f0f0f0;        
-  border: 1px solid #ddd;      
+  background: #f0f0f0;         
+  border: 1px solid #ddd;    
   border-radius: 8px;          
   padding: 10px;               
 }
@@ -50,6 +50,9 @@ button#analyze {
   line-height: 1.4;
   margin-top: 0;
   padding-top: 0;
+  
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 #result-text h3:first-child,
@@ -59,7 +62,7 @@ button#analyze {
 
 #result-text strong {
   display: block;
-  margin: 12px 0 4px;
+  margin: 12px 0 6px; 
 }
 
 #result-text > *:first-child {
