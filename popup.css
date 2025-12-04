@@ -1,8 +1,9 @@
+/* ...existing code... */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #fafafa;
   color: #333;
-  width: 300px; /* bigger extension size */
+  width: 300px;
   padding: 16px;
   margin: 0;
 }
@@ -14,7 +15,7 @@ h3 {
 }
 
 .powered {
-  font-size: 14px; /* slightly bigger */
+  font-size: 14px;
   color: #666;
   margin-bottom: 12px;
 }
@@ -39,10 +40,10 @@ button#analyze {
 
 #result-box {
   margin-top: 12px;
-  background: #f0f0f0;         /* light gray background */
-  border: 1px solid #ddd;      /* subtle border */
-  border-radius: 8px;          /* rounded corners */
-  padding: 10px;               /* space inside */
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
 }
 
 #result-text {
@@ -73,3 +74,4 @@ button#analyze {
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
 }
+/* ...existing
