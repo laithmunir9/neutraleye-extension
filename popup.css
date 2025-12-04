@@ -49,29 +49,85 @@ button#analyze {
 #result-text {
   font-size: 14px;
   line-height: 1.4;
-  margin-top: 0;
-  padding-top: 0;
+  margin: 0;
+  padding: 0;
   word-wrap: break-word;
   overflow-wrap: anywhere;
 }
 
-/* Remove extra spacing above the first visible element inside result box */
-#result-text h3:first-child,
-#result-text strong:first-child,
+/* Keep first/last child tidy */
 #result-text > *:first-child {
   margin-top: 0 !important;
   padding-top: 0 !important;
 }
-
-/* Ensure bold headers (e.g. "Bias Level:") are on their own line with spacing */
-#result-text strong {
-  display: block;
-  margin: 12px 0 4px;
-}
-
-/* Remove space below last element inside result box */
 #result-text > *:last-child {
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
 }
-/* ...existing
+
+/* Headings (h3) and bold labels (strong) behave like block headers */
+#result-text h3,
+#result-text strong {
+  display: block;
+  margin: 0 0 6px; /* consistent gap below headings */
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+/* If strong is inline at start of a paragraph, treat it like a heading */
+#result-text p > strong:first-child {
+  display: block;
+  margin: 0 0 6px;
+  padding: 0;
+}
+
+/* Hide stray <br> immediately after a strong heading inserted by backend */
+#result-text p > strong:first-child + br {
+  display: none;
+}
+
+/* Reset paragraph/list margins so spacing is fully controlled here */
+#result-text p,
+#result-text ul,
+#result-text ol {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Controlled spacing between sequential blocks */
+#result-text h3 + p,
+#result-text strong + p,
+#result-text strong + ul,
+#result-text p + p,
+#result-text p + ul,
+#result-text p + ol,
+#result-text ul + p,
+#result-text ol + p {
+  margin-top: 10px;
+}
+
+/* Lists: left indent and spacing */
+#result-text ul,
+#result-text ol {
+  padding-left: 1.1em;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+#result-text li {
+  margin-bottom: 8px;
+}
+
+/* Links inherit color and remain underlined for clarity */
+#result-text a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Ensure links open in a new tab when script sets target (visual only) */
+#result-box a[target="_blank"] {
+  cursor: pointer;
+}
+/* ...existing code... */
