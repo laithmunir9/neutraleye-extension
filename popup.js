@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
         /^file:\/\//i,
         /^https:\/\/chrome.google.com\/webstore/i
       ];
+
       if (restrictedPatterns.some((pattern) => pattern.test(url))) {
         loading.style.display = "none";
         resultText.innerHTML =
@@ -53,11 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
               return;
             }
 
-            if (!response || !response.content.trim()) {
+            if (!response || !response.content?.trim()) {
               console.warn("⚠️ No readable text found in response");
               loading.style.display = "none";
               resultText.innerHTML =
-                "⚠️ Could not analyze this page. Please open an article or blog post and try again.";
+                "⚠️ No readable text found on this page. Please open an article or blog post and try again.";
               resultBox.style.display = "block";
               return;
             }
