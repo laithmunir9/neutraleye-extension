@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NeutralEye - Bias Checker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Analyzes articles for potential bias and offers guidance to help you see multiple perspectives.",
   "permissions": ["activeTab", "scripting"],
   "background": {
