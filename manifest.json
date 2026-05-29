@@ -3,7 +3,7 @@
   "name": "NeutralEye - Bias Checker",
   "version": "1.0.2",
   "description": "Analyzes articles for potential bias and offers guidance to help you see multiple perspectives.",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "storage"],
   "background": {
     "service_worker": "background.js"
   },

@@ -1,13 +1,145 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const marked = window.marked || { parse: (text) => text };
-  const analyzeBtn = document.getElementById("analyze");
-  const resultText = document.getElementById("result-text");
-  const resultBox = document.getElementById("result-box");
-  const loading = document.getElementById("loading");
+  const API_BASE = "https://neutraleye-web.vercel.app";
 
+  // ── Elements ──────────────────────────────────────────────────────────────
+  const analyzeBtn      = document.getElementById("analyze");
+  const resultText      = document.getElementById("result-text");
+  const resultBox       = document.getElementById("result-box");
+  const loading         = document.getElementById("loading");
+  const historyNudge    = document.getElementById("history-nudge");
+
+  const userRow         = document.getElementById("user-row");
+  const userEmailEl     = document.getElementById("user-email-display");
+  const logoutBtn       = document.getElementById("logout-btn");
+
+  const signinRow       = document.getElementById("signin-row");
+  const showLoginBtn    = document.getElementById("show-login-btn");
+
+  const loginForm       = document.getElementById("login-form");
+  const loginEmail      = document.getElementById("login-email");
+  const loginPassword   = document.getElementById("login-password");
+  const loginError      = document.getElementById("login-error");
+  const loginSubmit     = document.getElementById("login-submit");
+  const loginCancel     = document.getElementById("login-cancel");
+
+  // ── Auth state ────────────────────────────────────────────────────────────
+  let currentToken = null;
+
+  function showLoggedIn(email) {
+    userEmailEl.textContent = email;
+    userRow.style.display = "flex";
+    signinRow.style.display = "none";
+    loginForm.style.display = "none";
+  }
+
+  function showLoggedOut() {
+    userRow.style.display = "none";
+    signinRow.style.display = "block";
+    loginForm.style.display = "none";
+  }
+
+  // Load auth state from storage
+  await new Promise((resolve) => {
+    chrome.storage.local.get(["accessToken", "userEmail"], (result) => {
+      if (result.accessToken) {
+        currentToken = result.accessToken;
+        showLoggedIn(result.userEmail || "");
+      } else {
+        showLoggedOut();
+      }
+      resolve();
+    });
+  });
+
+  // ── Login / logout ────────────────────────────────────────────────────────
+  showLoginBtn.addEventListener("click", () => {
+    loginForm.style.display = "block";
+    loginError.style.display = "none";
+    loginEmail.focus();
+  });
+
+  loginCancel.addEventListener("click", () => {
+    loginForm.style.display = "none";
+    loginEmail.value = "";
+    loginPassword.value = "";
+    loginError.style.display = "none";
+  });
+
+  loginSubmit.addEventListener("click", handleLogin);
+  loginPassword.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleLogin();
+  });
+
+  async function handleLogin() {
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value;
+    if (!email || !password) {
+      showLoginError("Enter your email and password.");
+      return;
+    }
+
+    loginSubmit.disabled = true;
+    loginSubmit.textContent = "Signing in…";
+    loginError.style.display = "none";
+
+    try {
+      const res = await fetch(`${API_BASE}/api/extension-auth`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showLoginError(data.error || "Sign in failed. Check your email and password.");
+        return;
+      }
+
+      chrome.storage.local.set({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        userEmail: data.email,
+      });
+
+      currentToken = data.accessToken;
+      loginEmail.value = "";
+      loginPassword.value = "";
+      showLoggedIn(data.email);
+    } catch {
+      showLoginError("Connection error. Please try again.");
+    } finally {
+      loginSubmit.disabled = false;
+      loginSubmit.textContent = "Sign in";
+    }
+  }
+
+  function showLoginError(msg) {
+    loginError.textContent = msg;
+    loginError.style.display = "block";
+  }
+
+  logoutBtn.addEventListener("click", () => {
+    chrome.storage.local.remove(["accessToken", "refreshToken", "userEmail"]);
+    currentToken = null;
+    showLoggedOut();
+    resultBox.style.display = "none";
+    historyNudge.style.display = "none";
+  });
+
+  // ── Nudge click → show login form ─────────────────────────────────────────
+  historyNudge.addEventListener("click", () => {
+    loginForm.style.display = "block";
+    loginEmail.focus();
+    historyNudge.style.display = "none";
+  });
+
+  // ── Analyze ───────────────────────────────────────────────────────────────
   analyzeBtn.addEventListener("click", () => {
     resultText.innerHTML = "";
     resultBox.style.display = "none";
+    historyNudge.style.display = "none";
     loading.style.display = "block";
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -21,13 +153,12 @@ document.addEventListener("DOMContentLoaded", () => {
         /^edge:\/\//i,
         /^about:/i,
         /^file:\/\//i,
-        /^https:\/\/chrome.google.com\/webstore/i
+        /^https:\/\/chrome.google.com\/webstore/i,
       ];
 
-      if (restrictedPatterns.some((pattern) => pattern.test(url))) {
+      if (restrictedPatterns.some((p) => p.test(url))) {
         loading.style.display = "none";
-        resultText.innerHTML =
-          "⚠️ Could not analyze this page. Please open a real article or website and try again.";
+        resultText.innerHTML = "⚠️ Could not analyze this page. Please open a real article or website and try again.";
         resultBox.style.display = "block";
         return;
       }
@@ -36,59 +167,66 @@ document.addEventListener("DOMContentLoaded", () => {
         { target: { tabId }, files: ["content.js"] },
         () => {
           if (chrome.runtime.lastError) {
-            console.error("⚠️ Script injection failed:", chrome.runtime.lastError.message);
             loading.style.display = "none";
-            resultText.innerHTML =
-              "⚠️ Could not analyze this page. Please open a real article or website and try again.";
+            resultText.innerHTML = "⚠️ Could not analyze this page. Please open a real article or website and try again.";
             resultBox.style.display = "block";
             return;
           }
 
           chrome.tabs.sendMessage(tabId, { action: "getText" }, async (response) => {
-            if (chrome.runtime.lastError) {
-              console.error("⚠️ Runtime error:", chrome.runtime.lastError.message);
+            if (chrome.runtime.lastError || !response?.content?.trim()) {
               loading.style.display = "none";
-              resultText.innerHTML =
-                "⚠️ Could not analyze this page. Please open a real article or website and try again.";
-              resultBox.style.display = "block";
-              return;
-            }
-
-            if (!response || !response.content?.trim()) {
-              console.warn("⚠️ No readable text found in response");
-              loading.style.display = "none";
-              resultText.innerHTML =
-                "⚠️ No readable text found on this page. Please open an article or blog post and try again.";
+              resultText.innerHTML = "⚠️ No readable text found on this page. Please open an article or blog post and try again.";
               resultBox.style.display = "block";
               return;
             }
 
             try {
-              const res = await fetch("https://neutraleye-web.vercel.app/api/extension", {
+              const fetchHeaders = { "Content-Type": "application/json" };
+              if (currentToken) fetchHeaders["Authorization"] = `Bearer ${currentToken}`;
+
+              const res = await fetch(`${API_BASE}/api/extension`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: fetchHeaders,
                 body: JSON.stringify({
                   text: response.content,
                   headline: response.headline,
                   author: response.author,
-                  date: response.date
-                })
+                  date: response.date,
+                  url,
+                }),
               });
 
+              // Expired token — clear and retry anonymously
+              if (res.status === 401) {
+                chrome.storage.local.remove(["accessToken", "refreshToken", "userEmail"]);
+                currentToken = null;
+                showLoggedOut();
+              }
+
+              if (res.status === 429) {
+                loading.style.display = "none";
+                resultText.innerHTML = "⚠️ Daily limit reached. Come back tomorrow or upgrade to Pro for unlimited access.";
+                resultBox.style.display = "block";
+                return;
+              }
+
               const data = await res.json();
-              const html = marked.parse(data.result);
+              const html = marked.parse(data.result || "");
 
               loading.style.display = "none";
               resultText.innerHTML = html;
               resultBox.style.display = "block";
 
-              const links = resultBox.querySelectorAll("a");
-              links.forEach((link) => link.setAttribute("target", "_blank"));
-            } catch (error) {
-              console.error("❌ Error fetching from backend:", error);
+              resultBox.querySelectorAll("a").forEach((link) => link.setAttribute("target", "_blank"));
+
+              // Show nudge if not logged in
+              if (!currentToken) {
+                historyNudge.style.display = "block";
+              }
+            } catch {
               loading.style.display = "none";
-              resultText.innerHTML =
-                "⚠️ Failed to check bias. Please try again later.";
+              resultText.innerHTML = "⚠️ Failed to check bias. Please try again later.";
               resultBox.style.display = "block";
             }
           });
