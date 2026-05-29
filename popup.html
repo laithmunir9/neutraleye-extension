@@ -2,30 +2,18 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>NeutralEye</title>
+  <title>NeutralEye - Bias Checker</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <header class="header">
-    <div class="brand">
-      <img src="icon48.png" alt="" class="brand-icon" />
-      <span class="brand-name">NeutralEye</span>
-    </div>
-  </header>
+  <h3>NeutralEye - Bias Checker</h3>
+  <div class="powered">Powered by AI</div>
+  <button id="analyze">Analyze</button>
 
-  <div class="content">
-    <button id="analyze" class="analyze-btn">Analyze this article</button>
+  <div id="loading" style="display:none;">Reading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
 
-    <div id="loading" class="loading" style="display:none;">
-      <div class="loading-dots">
-        <span></span><span></span><span></span>
-      </div>
-      <span class="loading-label">Analyzing…</span>
-    </div>
-
-    <div id="result-box" class="result-box" style="display:none;">
-      <div id="result-text" class="result-text"></div>
-    </div>
+  <div id="result-box" style="display:none;">
+    <div id="result-text"></div>
   </div>
 
   <script src="marked.min.js"></script>
