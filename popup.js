@@ -41,6 +41,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Load auth state from storage
   await new Promise((resolve) => {
+    if (!chrome.storage?.local) {
+      showLoggedOut();
+      resolve();
+      return;
+    }
     chrome.storage.local.get(["accessToken", "userEmail"], (result) => {
       if (result.accessToken) {
         currentToken = result.accessToken;
@@ -97,7 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      chrome.storage.local.set({
+      chrome.storage?.local?.set({
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
         userEmail: data.email,
@@ -121,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   logoutBtn.addEventListener("click", () => {
-    chrome.storage.local.remove(["accessToken", "refreshToken", "userEmail"]);
+    chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail"]);
     currentToken = null;
     showLoggedOut();
     resultBox.style.display = "none";
@@ -199,7 +204,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
               // Expired token — clear and retry anonymously
               if (res.status === 401) {
-                chrome.storage.local.remove(["accessToken", "refreshToken", "userEmail"]);
+                chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail"]);
                 currentToken = null;
                 showLoggedOut();
               }
