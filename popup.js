@@ -40,22 +40,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Load auth state from storage
-  await new Promise((resolve) => {
-    if (!chrome.storage?.local) {
-      showLoggedOut();
-      resolve();
-      return;
-    }
-    chrome.storage.local.get(["accessToken", "userEmail"], (result) => {
-      if (result.accessToken) {
-        currentToken = result.accessToken;
-        showLoggedIn(result.userEmail || "");
-      } else {
-        showLoggedOut();
-      }
-      resolve();
+  try {
+    await new Promise((resolve) => {
+      chrome.storage.local.get(["accessToken", "userEmail"], (result) => {
+        if (result.accessToken) {
+          currentToken = result.accessToken;
+          showLoggedIn(result.userEmail || "");
+        } else {
+          showLoggedOut();
+        }
+        resolve();
+      });
     });
-  });
+  } catch {
+    showLoggedOut();
+  }
 
   // ── Login / logout ────────────────────────────────────────────────────────
   showLoginBtn.addEventListener("click", () => {
