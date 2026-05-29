@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-              const res = await fetch("https://bias-checker-2u4d.onrender.com/check-bias", {
+              const res = await fetch("https://neutraleye-web.vercel.app/api/extension", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
