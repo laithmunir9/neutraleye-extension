@@ -12,9 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userRow         = document.getElementById("user-row");
   const userEmailEl     = document.getElementById("user-email-display");
   const logoutBtn       = document.getElementById("logout-btn");
-
-  const signinRow       = document.getElementById("signin-row");
-  const showLoginBtn    = document.getElementById("show-login-btn");
+  const userAvatar      = document.getElementById("user-avatar");
 
   const loginForm       = document.getElementById("login-form");
   const loginEmail      = document.getElementById("login-email");
@@ -29,14 +27,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   function showLoggedIn(email) {
     userEmailEl.textContent = email;
     userRow.style.display = "flex";
-    signinRow.style.display = "none";
     loginForm.style.display = "none";
+    historyNudge.style.display = "none";
+    userAvatar.textContent = email.charAt(0).toUpperCase();
+    userAvatar.style.display = "flex";
   }
 
   function showLoggedOut() {
     userRow.style.display = "none";
-    signinRow.style.display = "block";
     loginForm.style.display = "none";
+    userAvatar.style.display = "none";
   }
 
   // Load auth state from storage
@@ -57,12 +57,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── Login / logout ────────────────────────────────────────────────────────
-  showLoginBtn.addEventListener("click", () => {
-    loginForm.style.display = "block";
-    loginError.style.display = "none";
-    loginEmail.focus();
-  });
-
   loginCancel.addEventListener("click", () => {
     loginForm.style.display = "none";
     loginEmail.value = "";
@@ -129,14 +123,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentToken = null;
     showLoggedOut();
     resultBox.style.display = "none";
-    historyNudge.style.display = "none";
   });
 
-  // ── Nudge click → show login form ─────────────────────────────────────────
+  // ── Nudge click → show login form (nudge stays visible until login succeeds)
   historyNudge.addEventListener("click", () => {
     loginForm.style.display = "block";
     loginEmail.focus();
-    historyNudge.style.display = "none";
   });
 
   // ── Analyze ───────────────────────────────────────────────────────────────

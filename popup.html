@@ -7,15 +7,14 @@
 </head>
 <body>
   <h3>NeutralEye - Bias Checker</h3>
-  <div class="powered">Powered by AI</div>
 
-  <!-- Account row -->
-  <div id="user-row" class="user-row" style="display:none;">
-    <span id="user-email-display" class="user-email"></span>
-    <button id="logout-btn" class="link-btn">Sign out</button>
-  </div>
-  <div id="signin-row" class="signin-row" style="display:none;">
-    <button id="show-login-btn" class="link-btn">Sign in to save history</button>
+  <div class="subheader-row">
+    <div class="powered">Powered by AI</div>
+    <!-- Account row (logged-in state only) -->
+    <div id="user-row" class="user-row" style="display:none;">
+      <span id="user-email-display" class="user-email"></span>
+      <button id="logout-btn" class="link-btn">Sign out</button>
+    </div>
   </div>
 
   <!-- Login form -->
@@ -29,15 +28,16 @@
     </div>
   </div>
 
-  <button id="analyze">Analyze</button>
+  <div class="analyze-row">
+    <button id="analyze">Analyze</button>
+    <div id="history-nudge" class="history-nudge" style="display:none;">Sign in to save history →</div>
+    <div id="user-avatar" class="user-avatar" style="display:none;"></div>
+  </div>
 
   <div id="loading" style="display:none;">Reading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
 
   <div id="result-box" style="display:none;">
     <div id="result-text"></div>
-    <div id="history-nudge" class="history-nudge" style="display:none;">
-      Sign in to save this to your history →
-    </div>
   </div>
 
   <script src="marked.min.js"></script>
