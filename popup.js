@@ -208,9 +208,17 @@ document.addEventListener("DOMContentLoaded", async () => {
               }
 
               const data = await res.json();
-              const html = marked.parse(data.result || "");
 
               loading.style.display = "none";
+
+              if (!res.ok || !data.result) {
+                resultText.innerHTML = "⚠️ Failed to check bias. Please try again later.";
+                resultBox.style.display = "block";
+                return;
+              }
+
+              const html = marked.parse(data.result);
+
               resultText.innerHTML = html;
               resultBox.style.display = "block";
 

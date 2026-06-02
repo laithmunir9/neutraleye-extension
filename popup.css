@@ -79,6 +79,9 @@ h3 {
 
 .link-btn:hover { color: #6e4f2f; }
 
+.link-btn--dark { color: #222; }
+.link-btn--dark:hover { color: #000; }
+
 /* Login form */
 .login-form {
   display: flex;
@@ -186,7 +189,7 @@ button#analyze:hover { background: #6e4f2f; }
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  padding: 6px 10px 10px;
+  padding: 0 10px 10px;
 }
 
 #result-text {
