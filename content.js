@@ -107,7 +107,22 @@ function extractFromContainer(container) {
     ".promo",
     ".related",
     ".comments",
-    "#comments"
+    "#comments",
+    '[class*="comment"]',
+    '[id*="comment"]',
+    '[class*="viafoura"]',
+    '[id*="viafoura"]',
+    '[class*="vf-"]',
+    '[id*="vf-"]',
+    "figcaption",
+    "figure",
+    "picture",
+    '[class*="byline"]',
+    '[class*="author"]',
+    "[rel='author']",
+    '[class*="credit"]',
+    '[class*="caption"]',
+    '[class*="dateline"]'
   ];
 
   removeSelectors.forEach((sel) => {
@@ -153,7 +168,7 @@ function extractMetadata() {
   return { headline: title, author: author || "", date: date || "" };
 }
 
-function clampText(text, maxChars = 15000) {
+function clampText(text, maxChars = 100000) {
   if (!text) return "";
   if (text.length <= maxChars) return text;
   return text.slice(0, maxChars) + "...";
@@ -166,10 +181,10 @@ function extractArticleText() {
   // If still weak, fallback to body text but try to keep it sane
   if (!text || text.length < 400) {
     const fallback = cleanText(document.body?.innerText || "");
-    return clampText(fallback, 12000);
+    return clampText(fallback, 100000);
   }
 
-  return clampText(text, 15000);
+  return clampText(text, 100000);
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

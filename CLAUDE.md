@@ -128,6 +128,7 @@ After editing any file, reload the extension at `chrome://extensions` for change
 - Communicates with popup.js via `chrome.runtime.sendMessage` / `onMessage`
 - Extracts article body text as cleanly as possible (strips nav, ads, footers)
 - Does not store or log article text beyond passing it to popup.js
+- **Text cap: 100,000 characters** (`clampText` in `content.js`) — raised from 15K to match `MAX_ANALYSIS_TEXT_LENGTH` in the API so both paths analyse the same amount of text
 
 ---
 
