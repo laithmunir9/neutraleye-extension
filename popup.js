@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const marked = window.marked || { parse: (text) => text };
+  const DOMPurify = window.DOMPurify || { sanitize: () => "" };
   const API_BASE = "https://neutraleye-web.vercel.app";
 
   // ── Elements ──────────────────────────────────────────────────────────────
@@ -222,7 +223,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
               }
 
-              const html = marked.parse(data.result);
+              const html = DOMPurify.sanitize(marked.parse(data.result));
 
               resultText.innerHTML = html;
 
