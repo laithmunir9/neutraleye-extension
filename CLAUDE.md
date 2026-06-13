@@ -47,7 +47,7 @@ User clicks extension
 
 All API calls go to the `neutraleye-web` Vercel deployment — there is no separate extension backend.
 
-**API base URL:** `https://neutraleye-web.vercel.app` (constant at top of `popup.js`)
+**API base URL:** `https://tryneutraleye.com` (constant at top of `popup.js`)
 
 | Endpoint | Purpose |
 |----------|---------|

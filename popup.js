@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const marked = window.marked || { parse: (text) => text };
   const DOMPurify = window.DOMPurify || { sanitize: () => "" };
-  const API_BASE = "https://neutraleye-web.vercel.app";
+  const API_BASE = "https://tryneutraleye.com";
 
   // ── Elements ──────────────────────────────────────────────────────────────
   const analyzeBtn      = document.getElementById("analyze");
