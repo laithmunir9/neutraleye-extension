@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userRow         = document.getElementById("user-row");
   const userEmailEl     = document.getElementById("user-email-display");
   const logoutBtn       = document.getElementById("logout-btn");
-  const userAvatar      = document.getElementById("user-avatar");
 
   const loginForm       = document.getElementById("login-form");
   const loginEmail      = document.getElementById("login-email");
@@ -30,14 +29,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     userRow.style.display = "flex";
     loginForm.style.display = "none";
     historyNudge.style.display = "none";
-    userAvatar.textContent = email.charAt(0).toUpperCase();
-    userAvatar.style.display = "flex";
   }
 
   function showLoggedOut() {
     userRow.style.display = "none";
     loginForm.style.display = "none";
-    userAvatar.style.display = "none";
   }
 
   // Load auth state from storage

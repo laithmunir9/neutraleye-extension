@@ -10,11 +10,6 @@
 
   <div class="subheader-row">
     <div class="powered">Powered by AI</div>
-    <!-- Account row (logged-in state only) -->
-    <div id="user-row" class="user-row" style="display:none;">
-      <span id="user-email-display" class="user-email"></span>
-      <button id="logout-btn" class="link-btn">Sign out</button>
-    </div>
   </div>
 
   <!-- Login form -->
@@ -31,7 +26,12 @@
   <div class="analyze-row">
     <button id="analyze">Analyze</button>
     <div id="history-nudge" class="history-nudge" style="display:none;">Sign in to save history →</div>
-    <div id="user-avatar" class="user-avatar" style="display:none;"></div>
+  </div>
+
+  <!-- Account row (logged-in state only) — shown below Analyze -->
+  <div id="user-row" class="user-row" style="display:none;">
+    <span id="user-email-display" class="user-email"></span>
+    <button id="logout-btn" class="link-btn">Log out</button>
   </div>
 
   <div id="loading" style="display:none;">Reading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>

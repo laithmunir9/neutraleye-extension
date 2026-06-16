@@ -33,11 +33,14 @@ h3 {
   color: rgba(51, 51, 51, 0.55);
 }
 
-/* Account / auth rows — inline inside subheader-row */
+/* Account row — shown below the Analyze button when logged in */
 .user-row {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .user-email {
@@ -49,21 +52,6 @@ h3 {
   white-space: nowrap;
 }
 
-/* Profile avatar — shown next to Analyze when logged in */
-.user-avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: #8b6741;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
 
 .link-btn {
   background: none;
