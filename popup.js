@@ -7,11 +7,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const analyzeBtn      = document.getElementById("analyze");
   const resultText      = document.getElementById("result-text");
   const resultBox       = document.getElementById("result-box");
-  const contentTypeBadge = document.getElementById("content-type-badge");
   const loading         = document.getElementById("loading");
   const historyNudge    = document.getElementById("history-nudge");
-
-  const CONTENT_TYPE_LABELS = { news: "News", opinion: "Opinion", analysis: "Analysis/Commentary" };
 
   const userRow         = document.getElementById("user-row");
   const userEmailEl     = document.getElementById("user-email-display");
@@ -139,8 +136,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   analyzeBtn.addEventListener("click", () => {
     resultText.innerHTML = "";
     resultBox.style.display = "none";
-    contentTypeBadge.style.display = "none";
-    contentTypeBadge.textContent = "";
     historyNudge.style.display = "none";
     loading.style.display = "block";
 
@@ -226,12 +221,6 @@ document.addEventListener("DOMContentLoaded", async () => {
               const html = DOMPurify.sanitize(marked.parse(data.result));
 
               resultText.innerHTML = html;
-
-              const contentTypeLabel = CONTENT_TYPE_LABELS[data.contentType];
-              if (contentTypeLabel) {
-                contentTypeBadge.textContent = contentTypeLabel;
-                contentTypeBadge.style.display = "inline-block";
-              }
 
               resultBox.style.display = "block";
 
