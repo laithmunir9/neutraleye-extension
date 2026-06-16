@@ -189,12 +189,12 @@ button#analyze:hover { background: #6e4f2f; }
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  padding: 0 10px 10px;
+  padding: 10px;
 }
 
 .content-type-badge {
   display: inline-block;
-  margin: 10px 0 0;
+  margin: 0 0 6px;
   padding: 2px 9px;
   border-radius: 999px;
   border: 1px solid rgba(139, 103, 65, 0.25);
