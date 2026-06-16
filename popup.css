@@ -223,6 +223,7 @@ button#analyze:hover { background: #6e4f2f; }
 
 #result-text > *:first-child { margin-top: 0 !important; padding-top: 0 !important; }
 #result-text > *:last-child  { margin-bottom: 0 !important; }
+#result-text p:first-child > strong:first-child { margin-top: 0; }
 
 #result-text strong {
   display: block;
