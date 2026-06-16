@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
               if (res.status === 429) {
                 loading.style.display = "none";
-                resultText.innerHTML = "⚠️ Daily limit reached. Come back tomorrow or upgrade to Pro for unlimited access.";
+                resultText.innerHTML = "⚠️ Too many requests. Please wait a moment and try again.";
                 resultBox.style.display = "block";
                 return;
               }
