@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const resultBox       = document.getElementById("result-box");
   const loading         = document.getElementById("loading");
   const historyNudge    = document.getElementById("history-nudge");
+  const savedIndicator  = document.getElementById("saved-indicator");
 
   const userRow         = document.getElementById("user-row");
   const userEmailEl     = document.getElementById("user-email-display");
@@ -34,15 +35,50 @@ document.addEventListener("DOMContentLoaded", async () => {
   function showLoggedOut() {
     userRow.style.display = "none";
     loginForm.style.display = "none";
+    historyNudge.style.display = "block";
   }
 
-  // Load auth state from storage
+  // Load auth state from storage, refreshing the token if it's expired or nearly so
+  async function tryRefreshToken(refreshToken) {
+    try {
+      const res = await fetch(`${API_BASE}/api/extension-refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
   try {
     await new Promise((resolve) => {
-      chrome.storage.local.get(["accessToken", "userEmail"], (result) => {
+      chrome.storage.local.get(["accessToken", "refreshToken", "userEmail", "expiresAt"], async (result) => {
         if (result.accessToken) {
-          currentToken = result.accessToken;
-          showLoggedIn(result.userEmail || "");
+          const expiresAt = result.expiresAt ? Number(result.expiresAt) * 1000 : 0;
+          const nearExpiry = expiresAt && Date.now() > expiresAt - 5 * 60 * 1000;
+
+          if (nearExpiry && result.refreshToken) {
+            const refreshed = await tryRefreshToken(result.refreshToken);
+            if (refreshed?.accessToken) {
+              chrome.storage?.local?.set({
+                accessToken: refreshed.accessToken,
+                refreshToken: refreshed.refreshToken,
+                userEmail: refreshed.email,
+                expiresAt: refreshed.expiresAt,
+              });
+              currentToken = refreshed.accessToken;
+              showLoggedIn(refreshed.email || result.userEmail || "");
+            } else {
+              chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail", "expiresAt"]);
+              showLoggedOut();
+            }
+          } else {
+            currentToken = result.accessToken;
+            showLoggedIn(result.userEmail || "");
+          }
         } else {
           showLoggedOut();
         }
@@ -59,6 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     loginEmail.value = "";
     loginPassword.value = "";
     loginError.style.display = "none";
+    historyNudge.style.display = "block";
   });
 
   loginSubmit.addEventListener("click", handleLogin);
@@ -96,6 +133,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
         userEmail: data.email,
+        expiresAt: data.expiresAt,
       });
 
       currentToken = data.accessToken;
@@ -116,7 +154,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   logoutBtn.addEventListener("click", () => {
-    chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail"]);
+    chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail", "expiresAt"]);
     currentToken = null;
     showLoggedOut();
     resultBox.style.display = "none";
@@ -124,6 +162,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── Nudge click → show login form (nudge stays visible until login succeeds)
   historyNudge.addEventListener("click", () => {
+    historyNudge.style.display = "none";
     loginForm.style.display = "block";
     loginEmail.focus();
   });
@@ -133,6 +172,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     resultText.innerHTML = "";
     resultBox.style.display = "none";
     historyNudge.style.display = "none";
+    savedIndicator.style.display = "none";
     loading.style.display = "block";
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -222,9 +262,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
               resultBox.querySelectorAll("a").forEach((link) => link.setAttribute("target", "_blank"));
 
-              // Show nudge if not logged in
+              // If the server rejected our token, clear it and show the nudge
+              if (data.tokenExpired) {
+                chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail", "expiresAt"]);
+                currentToken = null;
+                showLoggedOut();
+              }
+
+              // Show nudge if not logged in, or saved indicator if logged in
               if (!currentToken) {
                 historyNudge.style.display = "block";
+              } else if (data.saved) {
+                savedIndicator.style.display = "block";
               }
             } catch {
               loading.style.display = "none";

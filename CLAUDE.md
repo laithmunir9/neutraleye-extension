@@ -33,12 +33,15 @@ icon16/48/128.png  # Extension icons
 ```
 User clicks extension
   → popup.js opens
+  → if token near expiry: silently refresh via /api/extension-refresh
   → popup.js sends message to content.js
   → content.js extracts article text from the active tab's DOM
   → content.js returns text to popup.js
-  → popup.js POSTs to /api/extension on neutraleye-web (Vercel)
-  → API runs OpenAI analysis, returns { result: "<markdown>" }
+  → popup.js POSTs to /api/extension (with Bearer token if signed in)
+  → API runs OpenAI analysis, returns { result, saved, tokenExpired }
   → popup.js renders markdown via marked.parse()
+  → if saved: show "Saved to history" indicator
+  → if tokenExpired: clear storage, show logged-out state
 ```
 
 ---
@@ -51,11 +54,14 @@ All API calls go to the `neutraleye-web` Vercel deployment — there is no separ
 
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /api/extension` | Bias analysis — sends `{ text, headline, url }`, receives `{ result, saved }` |
+| `POST /api/extension` | Bias analysis — sends `{ text, headline, url }`, receives `{ result, saved, tokenExpired }` |
 | `POST /api/extension-auth` | Login — sends `{ email, password }`, receives `{ accessToken, refreshToken, email, expiresAt }` |
+| `POST /api/extension-refresh` | Token refresh — sends `{ refreshToken }`, receives `{ accessToken, refreshToken, email, expiresAt }` or 401 |
 
 - Authenticated requests send `Authorization: Bearer <accessToken>` header
 - The API returns markdown in `result` — rendered via `marked.parse()`
+- `saved: true` means the analysis was stored to the user's cloud history; show the "Saved to history" indicator
+- `tokenExpired: true` means the Bearer token was rejected server-side — clear `chrome.storage.local` and call `showLoggedOut()`
 - **Sign in** is supported in the extension popup; **sign up** is website-only
 - The `url` field is always sent so the API can exclude the source outlet from suggested sources
 
@@ -78,10 +84,13 @@ const html = marked.parse(data.result);
 
 ## Auth Flow
 
-- Tokens are stored in `chrome.storage.local`
-- On popup open, `popup.js` checks for a stored token and resolves the user
-- On sign in: email + password → `/api/extension-auth` → store tokens → show logged-in state
-- On sign out: clear tokens from storage → show logged-out state
+- Tokens stored in `chrome.storage.local`: `{ accessToken, refreshToken, userEmail, expiresAt }` where `expiresAt` is a Unix timestamp in seconds (from Supabase session)
+- **On popup open:** check `expiresAt` — if within 5 minutes of expiry, silently call `/api/extension-refresh` to get new tokens and update storage before any analysis
+- **On sign in:** email + password → `/api/extension-auth` → store tokens → show logged-in state
+- **On sign out:** remove all four keys from `chrome.storage.local` → show logged-out state
+- **On `tokenExpired: true` response:** clear storage, call `showLoggedOut()` — the server rejected the token
+- **History nudge:** `showLoggedOut()` always shows the "Sign in to save history →" nudge immediately. Clicking the nudge shows the login form; cancelling restores the nudge.
+- **"Saved to history" indicator:** shown in the result box when `data.saved === true`. Reset to hidden on each new analyze click.
 - Authenticated users get cloud history saving and a shared 10/day usage limit
 - Anonymous users get an IP-based rate limit (5 req/min)
 

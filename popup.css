@@ -279,3 +279,9 @@ button#analyze:hover { background: #6e4f2f; }
 }
 
 .history-nudge:hover { color: #6e4f2f; }
+
+.saved-indicator {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #6a8f5c;
+}
