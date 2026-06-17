@@ -23,6 +23,7 @@ popup.css          # Popup styles
 content.js         # Content script — extracts article text from page DOM
 background.js      # Service worker stub (minimal)
 marked.min.js      # Markdown parser (renders API response)
+purify.min.js      # DOMPurify — sanitizes rendered HTML before injection
 icon16/48/128.png  # Extension icons
 ```
 
@@ -136,6 +137,7 @@ After editing any file, reload the extension at `chrome://extensions` for change
 - Runs in the page context of the active tab
 - Communicates with popup.js via `chrome.runtime.sendMessage` / `onMessage`
 - Extracts article body text as cleanly as possible (strips nav, ads, footers)
+- Works on a cloned container — never mutates the live page DOM
 - Does not store or log article text beyond passing it to popup.js
 - **Text cap: 100,000 characters** (`clampText` in `content.js`) — raised from 15K to match `MAX_ANALYSIS_TEXT_LENGTH` in the API so both paths analyse the same amount of text
 
@@ -149,6 +151,13 @@ After editing any file, reload the extension at `chrome://extensions` for change
 - Cancel button: plain underlined text in black — uses `.link-btn.link-btn--dark` classes
 - Font: system UI stack (`Segoe UI`, Tahoma, etc.)
 - Must stay visually consistent with the neutraleye-web design system
+
+---
+
+## Chrome Web Store Constraints
+
+- `manifest.json` description has a **132-character limit** — Chrome Web Store rejects the upload if exceeded
+- Version must be bumped in `manifest.json` for each new upload (no `package.json` in this repo)
 
 ---
 
