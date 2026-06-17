@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
               // Expired token — clear and retry anonymously
               if (res.status === 401) {
-                chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail"]);
+                chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail", "expiresAt"]);
                 currentToken = null;
                 showLoggedOut();
               }

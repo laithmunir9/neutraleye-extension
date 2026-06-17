@@ -87,6 +87,9 @@ function pickBestContainer() {
 function extractFromContainer(container) {
   if (!container) return "";
 
+  // Work on a clone so we never mutate the live page DOM
+  container = container.cloneNode(true);
+
   // Remove obviously irrelevant blocks inside the container
   const removeSelectors = [
     "nav",
