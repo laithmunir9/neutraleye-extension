@@ -1,0 +1,18 @@
+{
+  "name": "neutraleye-extension",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "vitest run",
+    "build": "node scripts/validate-manifest.mjs",
+    "verify": "npm run lint && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
+    "jsdom": "^25.0.1",
+    "vitest": "^2.1.8"
+  }
+}

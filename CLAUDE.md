@@ -120,6 +120,35 @@ After editing any file, reload the extension at `chrome://extensions` for change
 
 ---
 
+## Verify Loop
+
+`npm run verify` runs lint, tests, and a manifest sanity check — modeled on the
+same verify loop used in `neutraleye-web`. Run it before considering any change done:
+
+```
+npm run verify   # = npm run lint && npm run test && npm run build
+```
+
+- **`npm run lint`** — ESLint over `popup.js`, `content.js`, `background.js`,
+  `scripts/**/*.mjs`, and `tests/**/*.js` (config in `eslint.config.js`).
+  `marked.min.js` and `purify.min.js` are excluded (vendored, unminified rules don't apply).
+- **`npm run test`** — Vitest. Tests load `popup.js`/`content.js` as classic
+  (non-module) scripts into a jsdom `vm` context via `tests/helpers/loadScript.js`,
+  so top-level `function` declarations become reachable as `window.<name>` —
+  exactly how Chrome exposes them in a real popup — without adding `export`
+  statements or changing how the files are loaded.
+- **`npm run build`** — this repo has no bundler, so `scripts/validate-manifest.mjs`
+  stands in for the build leg: confirms `manifest.json` is valid MV3 and every
+  file it references (service worker, popup, icons, content scripts) actually exists.
+
+**popup.js hoist:** `isTokenNearExpiry`, `isRestrictedUrl`, and `isValidAnalysisResponse`
+are pulled out of the `DOMContentLoaded` closure to top-level functions so tests can
+reach them directly through the `vm` context, per above. Behavior at all three call
+sites (silent token refresh, restricted-page guard, API response validation) is
+unchanged — verified manually in the loaded extension, not just by the new unit tests.
+
+---
+
 ## Code Conventions
 
 - Plain JavaScript — no TypeScript, no bundler, no build step

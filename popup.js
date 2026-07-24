@@ -1,3 +1,26 @@
+// ── Pure helpers (top-level so tests can reach them directly) ────────────────
+
+function isTokenNearExpiry(expiresAt) {
+  const expiresAtMs = expiresAt ? Number(expiresAt) * 1000 : 0;
+  return Boolean(expiresAtMs) && Date.now() > expiresAtMs - 5 * 60 * 1000;
+}
+
+function isRestrictedUrl(url) {
+  const restrictedPatterns = [
+    /^chrome:\/\//i,
+    /^chrome-extension:\/\//i,
+    /^edge:\/\//i,
+    /^about:/i,
+    /^file:\/\//i,
+    /^https:\/\/chrome.google.com\/webstore/i,
+  ];
+  return restrictedPatterns.some((p) => p.test(url));
+}
+
+function isValidAnalysisResponse(res, data) {
+  return Boolean(res.ok && data.result);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const marked = window.marked || { parse: (text) => text };
   const DOMPurify = window.DOMPurify || { sanitize: () => "" };
@@ -57,8 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await new Promise((resolve) => {
       chrome.storage.local.get(["accessToken", "refreshToken", "userEmail", "expiresAt"], async (result) => {
         if (result.accessToken) {
-          const expiresAt = result.expiresAt ? Number(result.expiresAt) * 1000 : 0;
-          const nearExpiry = expiresAt && Date.now() > expiresAt - 5 * 60 * 1000;
+          const nearExpiry = isTokenNearExpiry(result.expiresAt);
 
           if (nearExpiry && result.refreshToken) {
             const refreshed = await tryRefreshToken(result.refreshToken);
@@ -180,16 +202,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const tabId = tab.id;
       const url = tab.url || "";
 
-      const restrictedPatterns = [
-        /^chrome:\/\//i,
-        /^chrome-extension:\/\//i,
-        /^edge:\/\//i,
-        /^about:/i,
-        /^file:\/\//i,
-        /^https:\/\/chrome.google.com\/webstore/i,
-      ];
-
-      if (restrictedPatterns.some((p) => p.test(url))) {
+      if (isRestrictedUrl(url)) {
         loading.style.display = "none";
         resultText.innerHTML = "⚠️ Could not analyze this page. Please open a real article or website and try again.";
         resultBox.style.display = "block";
@@ -248,7 +261,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
               loading.style.display = "none";
 
-              if (!res.ok || !data.result) {
+              if (!isValidAnalysisResponse(res, data)) {
                 resultText.innerHTML = "⚠️ Failed to check bias. Please try again later.";
                 resultBox.style.display = "block";
                 return;
