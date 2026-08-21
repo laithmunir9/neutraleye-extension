@@ -12,8 +12,11 @@ import { JSDOM } from "jsdom";
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 
-export function loadScript(relPath, { html = "<!doctype html><html><body></body></html>", chrome } = {}) {
-  const dom = new JSDOM(html, { url: "https://example.com/article", runScripts: "dangerously" });
+export function loadScript(relPath, { html, htmlFile, chrome, fireDOMContentLoaded = false } = {}) {
+  const markup = htmlFile
+    ? readFileSync(join(rootDir, htmlFile), "utf8")
+    : html ?? "<!doctype html><html><body></body></html>";
+  const dom = new JSDOM(markup, { url: "https://example.com/article", runScripts: "dangerously" });
   const sandbox = dom.getInternalVMContext ? dom.getInternalVMContext() : dom.window;
 
   // jsdom has no layout engine: innerText is unimplemented (always undefined) and
@@ -25,15 +28,20 @@ export function loadScript(relPath, { html = "<!doctype html><html><body></body>
     set(value) { this.textContent = value; },
   });
 
-  // popup.js's real startup wiring (DOM element lookups, auth bootstrap, listeners)
-  // isn't what these tests exercise — only the pure top-level helpers are. Suppress
-  // the DOMContentLoaded handler so it doesn't run against a minimal test fixture
+  // By default popup.js's real startup wiring (DOM lookups, auth bootstrap, listeners)
+  // isn't what these tests exercise — only the pure top-level helpers are — so the
+  // DOMContentLoaded handler is suppressed and never runs against a minimal fixture
   // that lacks the real popup.html elements.
-  const originalAddEventListener = sandbox.document.addEventListener.bind(sandbox.document);
-  sandbox.document.addEventListener = (type, ...rest) => {
-    if (type === "DOMContentLoaded") return;
-    return originalAddEventListener(type, ...rest);
-  };
+  // Tests that DO want the startup path (fireDOMContentLoaded) must supply a real
+  // fixture — pass htmlFile: "popup.html" — and dispatch the event themselves after
+  // this returns, since jsdom already fired its own before the script was injected.
+  if (!fireDOMContentLoaded) {
+    const originalAddEventListener = sandbox.document.addEventListener.bind(sandbox.document);
+    sandbox.document.addEventListener = (type, ...rest) => {
+      if (type === "DOMContentLoaded") return;
+      return originalAddEventListener(type, ...rest);
+    };
+  }
 
   sandbox.chrome = chrome ?? makeChromeStub();
   sandbox.console = console;

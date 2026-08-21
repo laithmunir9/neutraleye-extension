@@ -21,6 +21,46 @@ function isValidAnalysisResponse(res, data) {
   return Boolean(res.ok && data.result);
 }
 
+// ── Token refresh outcomes ───────────────────────────────────────────────────
+// A failed refresh is not one thing. Collapsing every failure into "signed out"
+// wipes a perfectly good session whenever the auth backend hiccups, so the three
+// cases are kept distinct and only REFRESH_DEAD is allowed to clear storage.
+const REFRESH_OK = "ok";       // new tokens in hand
+const REFRESH_RETRY = "retry"; // backend problem — keep the session, try again next open
+const REFRESH_DEAD = "dead";   // the refresh token itself is finished — sign out
+
+// /api/extension-refresh signals a genuinely dead session with a bare 401 and
+// nothing else — notably NOT its 503 AUTH_UNAVAILABLE, which is retry-later. If
+// the API ever names the dead case with a code, match it here too.
+function classifyRefreshResponse(res, data) {
+  if (res.ok && data?.accessToken) return REFRESH_OK;
+  if (res.status === 401) return REFRESH_DEAD;
+  // 5xx, AUTH_UNAVAILABLE, and even a malformed 200 fall through to retry: none of
+  // them are evidence that the stored refresh token is bad.
+  return REFRESH_RETRY;
+}
+
+// apiBase is passed in rather than read from the closure so this stays a top-level
+// function the tests can call directly (same reason as the pure helpers above).
+async function tryRefreshToken(refreshToken, apiBase) {
+  let res;
+  let data;
+  try {
+    res = await fetch(`${apiBase}/api/extension-refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
+    data = await res.json().catch(() => ({}));
+  } catch {
+    // The request never reached the server, so it said nothing about our token.
+    return { outcome: REFRESH_RETRY };
+  }
+
+  const outcome = classifyRefreshResponse(res, data);
+  return outcome === REFRESH_OK ? { outcome, tokens: data } : { outcome };
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const marked = window.marked || { parse: (text) => text };
   const DOMPurify = window.DOMPurify || { sanitize: () => "" };
@@ -62,20 +102,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Load auth state from storage, refreshing the token if it's expired or nearly so
-  async function tryRefreshToken(refreshToken) {
-    try {
-      const res = await fetch(`${API_BASE}/api/extension-refresh`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
-      });
-      if (!res.ok) return null;
-      return await res.json();
-    } catch {
-      return null;
-    }
-  }
-
   try {
     await new Promise((resolve) => {
       chrome.storage.local.get(["accessToken", "refreshToken", "userEmail", "expiresAt"], async (result) => {
@@ -83,19 +109,26 @@ document.addEventListener("DOMContentLoaded", async () => {
           const nearExpiry = isTokenNearExpiry(result.expiresAt);
 
           if (nearExpiry && result.refreshToken) {
-            const refreshed = await tryRefreshToken(result.refreshToken);
-            if (refreshed?.accessToken) {
+            const { outcome, tokens } = await tryRefreshToken(result.refreshToken, API_BASE);
+            if (outcome === REFRESH_OK) {
               chrome.storage?.local?.set({
-                accessToken: refreshed.accessToken,
-                refreshToken: refreshed.refreshToken,
-                userEmail: refreshed.email,
-                expiresAt: refreshed.expiresAt,
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+                userEmail: tokens.email,
+                expiresAt: tokens.expiresAt,
               });
-              currentToken = refreshed.accessToken;
-              showLoggedIn(refreshed.email || result.userEmail || "");
-            } else {
+              currentToken = tokens.accessToken;
+              showLoggedIn(tokens.email || result.userEmail || "");
+            } else if (outcome === REFRESH_DEAD) {
               chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail", "expiresAt"]);
               showLoggedOut();
+            } else {
+              // Retry-later: the auth backend was unreachable or unhealthy. Keep the
+              // stored session and stay signed in — the token gets another chance on
+              // the next popup open, and /api/extension reports tokenExpired if it
+              // really has gone bad.
+              currentToken = result.accessToken;
+              showLoggedIn(result.userEmail || "");
             }
           } else {
             currentToken = result.accessToken;
