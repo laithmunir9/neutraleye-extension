@@ -209,6 +209,19 @@ button#analyze:hover { background: #6e4f2f; }
   font-family: inherit;
 }
 
+/* Rendered markdown must never widen the 300px popup. Two shapes could:
+   the global `h3 { white-space: nowrap }` above (headings do appear in results
+   -- see the `#result-text h3 + p` rule below), and <pre>/<code>, which default
+   to `white-space: pre` and so ignore the `overflow-wrap: anywhere` above.
+   Both come from the model's own output: a `###` line in a free-text field, or
+   a ```json fence that makes JSON.parse fail so the raw response is rendered. */
+#result-text h3 { white-space: normal; }
+#result-text pre,
+#result-text code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 #result-text > *:first-child { margin-top: 0 !important; padding-top: 0 !important; }
 #result-text > *:last-child  { margin-bottom: 0 !important; }
 #result-text p:first-child > strong:first-child { margin-top: 0; }
