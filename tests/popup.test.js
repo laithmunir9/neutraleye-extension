@@ -44,7 +44,7 @@ describe("isRestrictedUrl", () => {
 
 describe("isValidAnalysisResponse", () => {
   it("is true when ok and result is present", () => {
-    expect(isValidAnalysisResponse({ ok: true }, { result: "## Bias analysis" })).toBe(true);
+    expect(isValidAnalysisResponse({ ok: true }, { result: "## Framing analysis" })).toBe(true);
   });
 
   it("is false when the response is not ok", () => {

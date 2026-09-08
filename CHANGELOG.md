@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.3 — 2026-09-08
+
+- Palette update to match the redesigned site, no functional changes
+
 ## 1.1.2 — 2026-08-22
 
 - Stay signed in when the sign-in server is temporarily unreachable, instead of being logged out and asked to sign in again

@@ -1,7 +1,7 @@
 # NeutralEye — Chrome Extension
 
 ## Overview
-The NeutralEye Extension allows users to analyze bias directly while browsing articles in Chrome.
+The NeutralEye Extension allows users to run framing analysis directly while browsing articles in Chrome.
 
 ## Role in the System
 This repository handles the browser-side experience, including content extraction and result display.  

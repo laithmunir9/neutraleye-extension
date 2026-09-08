@@ -5,8 +5,8 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #fafafa;
-  color: #333;
+  background: #ffffff;
+  color: #3b4245;
   width: 300px;
   padding: 16px;
   margin: 0;
@@ -16,7 +16,7 @@ h3 {
   font-size: 18px;
   font-weight: 700;
   margin: 0 0 6px 0;
-  color: #333;
+  color: #0d0f10;
   white-space: nowrap;
 }
 
@@ -30,7 +30,7 @@ h3 {
 
 .powered {
   font-size: 13px;
-  color: rgba(51, 51, 51, 0.55);
+  color: #667074;
 }
 
 /* Account row — shown below the Analyze button when logged in */
@@ -40,12 +40,12 @@ h3 {
   justify-content: space-between;
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid #dfe2e2;
 }
 
 .user-email {
   font-size: 11px;
-  color: rgba(51, 51, 51, 0.55);
+  color: #667074;
   max-width: 130px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -59,15 +59,15 @@ h3 {
   padding: 0;
   font-size: 12px;
   font-family: inherit;
-  color: #8b6741;
+  color: #0e5a5e;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-.link-btn:hover { color: #6e4f2f; }
+.link-btn:hover { color: #0b484b; }
 
-.link-btn--dark { color: #222; }
+.link-btn--dark { color: #0d0f10; }
 .link-btn--dark:hover { color: #000; }
 
 /* Login form */
@@ -77,25 +77,25 @@ h3 {
   gap: 7px;
   margin-bottom: 10px;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f4f5f5;
+  border: 1px solid #dfe2e2;
   border-radius: 8px;
 }
 
 .input-field {
   width: 100%;
   padding: 7px 9px;
-  border: 1px solid rgba(0, 0, 0, 0.18);
+  border: 1px solid #dfe2e2;
   border-radius: 6px;
   background: #fff;
-  color: #333;
+  color: #3b4245;
   font-size: 13px;
   font-family: inherit;
   outline: none;
 }
 
 .input-field:focus {
-  border-color: #8b6741;
+  border-color: #0e5a5e;
 }
 
 .login-error {
@@ -113,7 +113,7 @@ h3 {
 
 .btn-primary {
   padding: 6px 14px;
-  background: #222;
+  background: #0d0f10;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -124,7 +124,7 @@ h3 {
   transition: background 140ms ease;
 }
 
-.btn-primary:hover { background: #444; }
+.btn-primary:hover { background: #3b4245; }
 .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* Analyze button row */
@@ -141,21 +141,21 @@ button#analyze {
   font-size: 14px;
   font-weight: 500;
   font-family: inherit;
-  color: #f8f4ee;
-  background: #8b6741;
+  color: #f4f5f5;
+  background: #0e5a5e;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background 140ms ease;
 }
 
-button#analyze:hover { background: #6e4f2f; }
+button#analyze:hover { background: #0b484b; }
 
 /* Loading */
 #loading {
   margin-top: 12px;
   font-size: 14px;
-  color: rgba(32, 27, 22, 0.5);
+  color: #667074;
 }
 
 .dot {
@@ -174,8 +174,8 @@ button#analyze:hover { background: #6e4f2f; }
 /* Result box */
 #result-box {
   margin-top: 12px;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f4f5f5;
+  border: 1px solid #dfe2e2;
   border-radius: 8px;
   padding: 10px;
 }
@@ -185,9 +185,9 @@ button#analyze:hover { background: #6e4f2f; }
   margin: 0 0 6px;
   padding: 2px 9px;
   border-radius: 999px;
-  border: 1px solid rgba(139, 103, 65, 0.25);
-  background: rgba(139, 103, 65, 0.08);
-  color: #8b6741;
+  border: 1px solid rgba(14, 90, 94, 0.25);
+  background: #e5f0f0;
+  color: #0e5a5e;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -201,7 +201,7 @@ button#analyze:hover { background: #6e4f2f; }
   padding: 0;
   word-wrap: break-word;
   overflow-wrap: anywhere;
-  color: #333;
+  color: #3b4245;
   font-family: inherit;
 }
 
@@ -232,7 +232,7 @@ button#analyze:hover { background: #6e4f2f; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #8b6741;
+  color: #0e5a5e;
   margin: 10px 0 4px;
 }
 
@@ -252,7 +252,7 @@ button#analyze:hover { background: #6e4f2f; }
   padding: 0;
   font-size: 14px;
   line-height: 1.5;
-  color: #333;
+  color: #3b4245;
 }
 
 #result-text h3 + p,
@@ -274,7 +274,7 @@ button#analyze:hover { background: #6e4f2f; }
 #result-text li { margin-bottom: 5px; }
 
 #result-text a {
-  color: #8b6741;
+  color: #0e5a5e;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -284,14 +284,14 @@ button#analyze:hover { background: #6e4f2f; }
 /* History nudge — inline, to the right of Analyze */
 .history-nudge {
   font-size: 12px;
-  color: #8b6741;
+  color: #0e5a5e;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
   white-space: nowrap;
 }
 
-.history-nudge:hover { color: #6e4f2f; }
+.history-nudge:hover { color: #0b484b; }
 
 .saved-indicator {
   margin-top: 8px;

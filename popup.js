@@ -295,7 +295,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               loading.style.display = "none";
 
               if (!isValidAnalysisResponse(res, data)) {
-                resultText.innerHTML = "⚠️ Failed to check bias. Please try again later.";
+                resultText.innerHTML = "⚠️ Couldn't run the analysis. Try again in a moment.";
                 resultBox.style.display = "block";
                 return;
               }
@@ -323,7 +323,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               }
             } catch {
               loading.style.display = "none";
-              resultText.innerHTML = "⚠️ Failed to check bias. Please try again later.";
+              resultText.innerHTML = "⚠️ Couldn't run the analysis. Try again in a moment.";
               resultBox.style.display = "block";
             }
           });
