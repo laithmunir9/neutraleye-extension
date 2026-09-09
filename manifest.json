@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "NeutralEye - Bias Checker",
-  "version": "1.1.0",
-  "description": "Shows how a news article frames its story — tone, sourcing, and omission — and helps you see multiple perspectives.",
+  "version": "1.1.3",
+  "description": "Shows how a news article frames its story: tone, sourcing, and omission. See multiple perspectives before you finish reading.",
   "permissions": ["activeTab", "scripting", "storage"],
   "background": {
     "service_worker": "background.js"
