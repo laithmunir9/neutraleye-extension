@@ -12,10 +12,27 @@ body {
   margin: 0;
 }
 
+/* Logo sits beside the wordmark. The 48px icon rendered at 20px rather than
+   icon16, so it stays crisp on high-DPI displays. */
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.logo {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
 h3 {
   font-size: 18px;
   font-weight: 700;
-  margin: 0 0 6px 0;
+  margin: 0;
   color: #0d0f10;
   white-space: nowrap;
 }
