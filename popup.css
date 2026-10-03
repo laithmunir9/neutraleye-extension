@@ -1,15 +1,52 @@
+/* The popup in the website's visual language (neutraleye-web, October 2026):
+   Source Serif 4 throughout, a cool paper background, the result on a white
+   sheet, ink for every control, and the teal accent reserved for the
+   annotation mark on evidence. Tokens mirror --fc-* in the web globals.css. */
+
+@font-face {
+  font-family: "Source Serif 4";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("fonts/SourceSerif4-latin.woff2") format("woff2");
+}
+
+:root {
+  --paper: #f4f5f5;
+  --sheet: #ffffff;
+  --border: #dfe2e2;
+  --border-input: #7f8890;
+  --ink: #0d0f10;
+  --ink-hover: #2c3235;
+  --body: #3b4245;
+  --muted: #667074;
+  --accent: #0e5a5e;
+  --tint: #e5f0f0;
+  --error: #8a443c;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   font-family: inherit;
 }
 
+::selection {
+  background: rgb(14 90 94 / 0.16);
+}
+
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #ffffff;
-  color: #3b4245;
+  font-family: "Source Serif 4", Georgia, serif;
+  background: var(--paper);
+  color: var(--body);
   width: 300px;
   padding: 16px;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid rgb(13 15 16 / 0.35);
+  outline-offset: 2px;
 }
 
 /* Logo sits beside the wordmark. The 48px icon rendered at 20px rather than
@@ -18,7 +55,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .logo {
@@ -31,148 +68,156 @@ body {
 
 h3 {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   margin: 0;
-  color: #0d0f10;
+  color: var(--ink);
   white-space: nowrap;
 }
 
-/* Subheader: "Powered by AI" + auth link on same row */
 .subheader-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .powered {
   font-size: 13px;
-  color: #667074;
+  color: var(--muted);
 }
 
-/* Account row — shown below the Analyze button when logged in */
+/* Account row, shown below the Analyze button when signed in */
 .user-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #dfe2e2;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
 }
 
 .user-email {
-  font-size: 11px;
-  color: #667074;
-  max-width: 130px;
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-
 .link-btn {
   background: none;
   border: none;
   padding: 0;
-  font-size: 12px;
-  font-family: inherit;
-  color: #0e5a5e;
+  font-size: 13px;
+  color: var(--body);
   cursor: pointer;
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration-color: var(--border-input);
+  text-underline-offset: 3px;
 }
 
-.link-btn:hover { color: #0b484b; }
+.link-btn:hover {
+  color: var(--ink);
+  text-decoration-color: var(--ink);
+}
 
-.link-btn--dark { color: #0d0f10; }
-.link-btn--dark:hover { color: #000; }
+.link-btn--dark { color: var(--ink); }
 
-/* Login form */
+.sign-in-link {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* Login form, a white sheet on the paper */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  margin-bottom: 10px;
-  padding: 10px;
-  background: #f4f5f5;
-  border: 1px solid #dfe2e2;
-  border-radius: 8px;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--sheet);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgb(13 15 16 / 0.06);
 }
 
 .input-field {
   width: 100%;
-  padding: 7px 9px;
-  border: 1px solid #dfe2e2;
-  border-radius: 6px;
-  background: #fff;
-  color: #3b4245;
-  font-size: 13px;
-  font-family: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  background: var(--sheet);
+  color: var(--ink);
+  font-size: 14px;
   outline: none;
 }
 
+.input-field::placeholder { color: var(--muted); }
+
 .input-field:focus {
-  border-color: #0e5a5e;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgb(13 15 16 / 0.08);
 }
 
 .login-error {
-  font-size: 12px;
-  color: #c0392b;
-  line-height: 1.4;
+  font-size: 12.5px;
+  color: var(--error);
+  line-height: 1.45;
 }
 
 .login-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 2px;
 }
 
 .btn-primary {
-  padding: 6px 14px;
-  background: #0d0f10;
+  padding: 7px 14px;
+  background: var(--ink);
   color: #fff;
   border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  font-family: inherit;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   transition: background 140ms ease;
 }
 
-.btn-primary:hover { background: #3b4245; }
+.btn-primary:hover { background: var(--ink-hover); }
 .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* Analyze button row */
 .analyze-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
-/* Analyze button — matches screenshot shape, warm brown instead of black */
+/* Ink, like the site's primary action: analysing is a free action the reader
+   takes themselves. The accent belongs to the evidence mark. */
 button#analyze {
   display: inline-block;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  font-family: inherit;
-  color: #f4f5f5;
-  background: #0e5a5e;
+  padding: 9px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--ink);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background 140ms ease;
 }
 
-button#analyze:hover { background: #0b484b; }
+button#analyze:hover { background: var(--ink-hover); }
 
 /* Loading */
 #loading {
-  margin-top: 12px;
+  margin-top: 14px;
   font-size: 14px;
-  color: #667074;
+  color: var(--muted);
 }
 
 .dot {
@@ -188,38 +233,28 @@ button#analyze:hover { background: #0b484b; }
   50%       { opacity: 1; }
 }
 
-/* Result box */
-#result-box {
-  margin-top: 12px;
-  background: #f4f5f5;
-  border: 1px solid #dfe2e2;
-  border-radius: 8px;
-  padding: 10px;
+@media (prefers-reduced-motion: reduce) {
+  .dot { animation: none; }
 }
 
-.content-type-badge {
-  display: inline-block;
-  margin: 0 0 6px;
-  padding: 2px 9px;
-  border-radius: 999px;
-  border: 1px solid rgba(14, 90, 94, 0.25);
-  background: #e5f0f0;
-  color: #0e5a5e;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+/* Result, a white sheet raised off the paper */
+#result-box {
+  margin-top: 14px;
+  background: var(--sheet);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 6px 16px rgb(13 15 16 / 0.06);
 }
 
 #result-text {
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
   padding: 0;
   word-wrap: break-word;
   overflow-wrap: anywhere;
-  color: #3b4245;
-  font-family: inherit;
+  color: var(--body);
 }
 
 #result-text * {
@@ -241,26 +276,36 @@ button#analyze:hover { background: #0b484b; }
 
 #result-text > *:first-child { margin-top: 0 !important; padding-top: 0 !important; }
 #result-text > *:last-child  { margin-bottom: 0 !important; }
-#result-text p:first-child > strong:first-child { margin-top: 0; }
 
+/* Section labels name a part of the result, which is the one place the
+   design system allows small tracked caps. Muted ink, not accent. */
 #result-text strong {
   display: block;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #0e5a5e;
-  margin: 10px 0 4px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 14px 0 4px;
 }
 
 #result-text strong:first-child { margin-top: 0; }
 
 #result-text p > strong:first-child {
   display: block;
-  margin: 10px 0 4px;
+  margin: 14px 0 4px;
 }
 
 #result-text p > strong:first-child + br { display: none; }
+
+/* The finding leads: the first paragraph is the framing line. */
+#result-text > p:first-child {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
 
 #result-text p,
 #result-text ul,
@@ -268,8 +313,7 @@ button#analyze:hover { background: #0b484b; }
   margin: 0;
   padding: 0;
   font-size: 14px;
-  line-height: 1.5;
-  color: #3b4245;
+  line-height: 1.55;
 }
 
 #result-text h3 + p,
@@ -291,27 +335,57 @@ button#analyze:hover { background: #0b484b; }
 #result-text li { margin-bottom: 5px; }
 
 #result-text a {
-  color: #0e5a5e;
+  color: var(--ink);
   text-decoration: underline;
+  text-decoration-color: var(--border-input);
   text-underline-offset: 2px;
 }
 
 #result-box a[target="_blank"] { cursor: pointer; }
 
-/* History nudge — inline, to the right of Analyze */
-.history-nudge {
-  font-size: 12px;
-  color: #0e5a5e;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  white-space: nowrap;
+/* Evidence: the same mark as the website (src/components/QuoteEvidence). The
+   tint and a 2px rule on the baseline, painted as backgrounds so the mark
+   survives a line wrap, and the reason hanging under the line it belongs to. */
+#result-text ul.evidence-list {
+  list-style: none;
+  padding-left: 0;
 }
 
-.history-nudge:hover { color: #0b484b; }
+/* Block, not grid: the mark has to stay inline so a wrapped quote is marked
+   line by line instead of becoming one tinted rectangle. */
+#result-text li.evidence-item {
+  display: block;
+  margin: 0;
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+}
 
-.saved-indicator {
-  margin-top: 8px;
-  font-size: 11px;
-  color: #6a8f5c;
+#result-text li.evidence-item:first-child {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+mark.annotation {
+  background-color: transparent;
+  background-image:
+    linear-gradient(var(--accent), var(--accent)),
+    linear-gradient(var(--tint), var(--tint));
+  background-size: 100% 2px, 100% 100%;
+  background-position: 0 100%, 0 0;
+  background-repeat: no-repeat;
+  color: var(--ink);
+  padding: 0.08em 0.14em;
+  border-radius: 2px 2px 0 0;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  line-height: 1.6;
+}
+
+.evidence-note {
+  display: block;
+  margin-top: 5px;
+  padding-left: 8px;
+  border-left: 2px solid rgb(14 90 94 / 0.13);
+  font-size: 12.5px;
+  color: var(--muted);
 }

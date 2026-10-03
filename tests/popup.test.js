@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { loadScript, makeChromeStub } from "./helpers/loadScript.js";
 
 const { window } = loadScript("popup.js");
-const { isTokenNearExpiry, isRestrictedUrl, isValidAnalysisResponse, classifyRefreshResponse } = window;
+const { isTokenNearExpiry, isRestrictedUrl, isValidAnalysisResponse, classifyRefreshResponse, markEvidence } = window;
 
 describe("isTokenNearExpiry", () => {
   it("is false when expiry is far in the future", () => {
@@ -177,7 +177,7 @@ async function runStartup(fetchImpl) {
   return {
     wiped,
     saved,
-    signedOut: document.getElementById("history-nudge").style.display === "block",
+    signedOut: document.getElementById("sign-in-link").style.display === "inline",
     signedInAs: document.getElementById("user-email-display").textContent,
   };
 }
@@ -220,5 +220,69 @@ describe("startup refresh — storage wipe path", () => {
     expect(state.wiped).toBe(false);
     expect(state.saved.at(-1).accessToken).toBe("fresh-access");
     expect(state.signedInAs).toBe("user@example.com");
+  });
+});
+
+// The exact HTML marked.min.js produces for the API's markdown (checked by
+// running the vendored parser on a real result).
+const RENDERED = `<p><strong>Framing</strong>
+Moderate framing.</p>
+<p><strong>Examples</strong></p>
+<ul>
+<li>&quot;The council rammed through its bloated budget&quot;: language</li>
+<li>&quot;Critics were brushed aside&quot;: framing</li>
+<li>Something that is not a quote</li>
+</ul>
+<p><strong>Recommendations</strong></p>
+<ul>
+<li>&quot;Read the full statement&quot;: compare</li>
+</ul>`;
+
+describe("markEvidence", () => {
+  function render(html) {
+    const box = window.document.createElement("div");
+    box.innerHTML = html;
+    return box;
+  }
+
+  it("draws each quoted passage as a mark with its reason as a note", () => {
+    const box = render(RENDERED);
+    expect(markEvidence(box)).toBe(2);
+    const marks = box.querySelectorAll("mark.annotation");
+    expect([...marks].map((m) => m.textContent)).toEqual([
+      "The council rammed through its bloated budget",
+      "Critics were brushed aside",
+    ]);
+    const notes = [...box.querySelectorAll(".evidence-note")].map((n) => n.textContent);
+    expect(notes).toEqual(["Loaded wording", "Framing"]);
+  });
+
+  it("leaves items that are not quotes, and lists under other headings, untouched", () => {
+    const box = render(RENDERED);
+    markEvidence(box);
+    expect(box.textContent).toContain("Something that is not a quote");
+    // The Recommendations list has the same shape but is not evidence.
+    expect(box.querySelectorAll("ul")[1].querySelector("mark")).toBeNull();
+  });
+
+  it("treats model output as text, never markup", () => {
+    const box = render(`<p><strong>Examples</strong></p><ul><li>&quot;&lt;img src=x onerror=alert(1)&gt;&quot;: framing</li></ul>`);
+    markEvidence(box);
+    expect(box.querySelector("img")).toBeNull();
+    expect(box.querySelector("mark").textContent).toBe("<img src=x onerror=alert(1)>");
+  });
+
+  it("is a no-op on a result with no Examples block", () => {
+    expect(markEvidence(render("<p>No significant framing detected.</p>"))).toBe(0);
+  });
+});
+
+describe("popup copy", () => {
+  it("no longer promises a history the site does not have", async () => {
+    const { readFileSync } = await import("node:fs");
+    const html = readFileSync(new URL("../popup.html", import.meta.url), "utf8");
+    const js = readFileSync(new URL("../popup.js", import.meta.url), "utf8");
+    expect(html).not.toMatch(/history/i);
+    expect(js).not.toMatch(/["'`][^"'`]*save[sd]? (to )?history/i);
   });
 });

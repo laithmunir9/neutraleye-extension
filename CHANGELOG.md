@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.4 — 2026-10-03
+
+- New look to match the redesigned website: Source Serif type, the result on a white sheet, and an ink Analyze button
+- Quoted evidence is now marked in the text, with the reason under each passage, the same way the website shows it
+- Removed the "save history" wording, since the website no longer has a history page; signing in still works as before
+
 ## 1.1.3 — 2026-09-08
 
 - Palette update to match the redesigned site, no functional changes

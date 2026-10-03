@@ -102,6 +102,7 @@ mkdir -p "$STAGE"
 
 cp manifest.json popup.html popup.js popup.css content.js background.js \
    marked.min.js purify.min.js icon16.png icon48.png icon128.png "$STAGE"/
+mkdir -p "$STAGE/fonts" && cp fonts/SourceSerif4-latin.woff2 "$STAGE/fonts/"
 
 (cd "$(dirname "$STAGE")" && zip -r "neutraleye-extension-v${VERSION}.zip" "$(basename "$STAGE")")
 mv "$(dirname "$STAGE")/neutraleye-extension-v${VERSION}.zip" .

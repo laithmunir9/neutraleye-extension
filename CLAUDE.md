@@ -25,6 +25,7 @@ background.js      # Service worker stub (minimal)
 marked.min.js      # Markdown parser (renders API response)
 purify.min.js      # DOMPurify — sanitizes rendered HTML before injection
 icon16/48/128.png  # Extension icons
+fonts/SourceSerif4-latin.woff2  # Source Serif 4 (OFL), latin subset, variable weight 400-700; bundled so the popup matches the site
 ```
 
 ---
@@ -41,7 +42,6 @@ User clicks extension
   → popup.js POSTs to /api/extension (with Bearer token if signed in)
   → API runs OpenAI analysis, returns { result, saved, tokenExpired }
   → popup.js renders markdown via marked.parse()
-  → if saved: show "Saved to history" indicator
   → if tokenExpired: clear storage, show logged-out state
 ```
 
@@ -61,7 +61,7 @@ All API calls go to the `neutraleye-web` Vercel deployment — there is no separ
 
 - Authenticated requests send `Authorization: Bearer <accessToken>` header
 - The API returns markdown in `result` — rendered via `marked.parse()`
-- `saved: true` means the analysis was stored to the user's cloud history; show the "Saved to history" indicator
+- `saved: true` means the analysis was stored to the user's account. Since 1.1.4 the popup does not mention it: the website no longer has a history page, so promising history would be promising something nobody can see. Saving continues server-side so a history page can come back without losing data.
 - `tokenExpired: true` means the Bearer token was rejected server-side — clear `chrome.storage.local` and call `showLoggedOut()`
 - **Sign in** is supported in the extension popup; **sign up** is website-only
 - The `url` field is always sent so the API can exclude the source outlet from suggested sources
@@ -90,9 +90,8 @@ const html = marked.parse(data.result);
 - **On sign in:** email + password → `/api/extension-auth` → store tokens → show logged-in state
 - **On sign out:** remove all four keys from `chrome.storage.local` → show logged-out state
 - **On `tokenExpired: true` response:** clear storage, call `showLoggedOut()` — the server rejected the token
-- **History nudge:** `showLoggedOut()` always shows the "Sign in to save history →" nudge immediately. Clicking the nudge shows the login form; cancelling restores the nudge.
-- **"Saved to history" indicator:** shown in the result box when `data.saved === true`. Reset to hidden on each new analyze click.
-- Authenticated users get cloud history saving and a shared 10/day usage limit
+- **Sign in link:** `showLoggedOut()` shows a plain "Sign in" link (`#sign-in-link`) beside Analyze. Clicking it shows the login form; cancelling brings the link back. (Before 1.1.4 this read "Sign in to save history →".)
+- Authenticated users get a shared 10/day usage limit, and their reads are saved to their account
 - Anonymous users get an IP-based rate limit (5 req/min)
 
 ---
@@ -141,9 +140,9 @@ npm run verify   # = npm run lint && npm run test && npm run build
   stands in for the build leg: confirms `manifest.json` is valid MV3 and every
   file it references (service worker, popup, icons, content scripts) actually exists.
 
-**popup.js hoist:** `isTokenNearExpiry`, `isRestrictedUrl`, and `isValidAnalysisResponse`
+**popup.js hoist:** `isTokenNearExpiry`, `isRestrictedUrl`, `isValidAnalysisResponse` and `markEvidence`
 are pulled out of the `DOMContentLoaded` closure to top-level functions so tests can
-reach them directly through the `vm` context, per above. Behavior at all three call
+reach them directly through the `vm` context, per above. Behavior at the original three call
 sites (silent token refresh, restricted-page guard, API response validation) is
 unchanged — verified manually in the loaded extension, not just by the new unit tests.
 
@@ -174,11 +173,13 @@ unchanged — verified manually in the loaded extension, not just by the new uni
 
 ## Design
 
-- Warm brown primary: `#8b6741` (hover: `#6e4f2f`) — Analyze button colour
-- Off-white text/background: `#f8f4ee`
-- Sign in button: dark (`#222`, hover `#444`) — uses `.btn-primary` class
-- Cancel button: plain underlined text in black — uses `.link-btn.link-btn--dark` classes
-- Font: system UI stack (`Segoe UI`, Tahoma, etc.)
+Matches the neutraleye-web homepage (October 2026). Tokens at the top of `popup.css` mirror `--fc-*` in the web repo's `globals.css`.
+
+- Font: Source Serif 4, bundled in `fonts/` (no network fetch from the popup)
+- Paper background `#f4f5f5`; the login form and the result sit on white sheets with a soft shadow
+- Ink for every control: Analyze and Sign in are `#0d0f10` (hover `#2c3235`); text links are underlined ink
+- The teal accent `#0e5a5e` (tint `#e5f0f0`) is reserved for the evidence mark. `markEvidence()` in `popup.js` turns each `"quote": reason` item under the **Examples** heading into a `<mark class="annotation">` plus a note, built with DOM nodes and `textContent` only. The mark must stay inline (the list item is `display: block`, not grid) or a wrapped quote becomes one tinted rectangle
+- Section labels (FRAMING, SUMMARY...) are small tracked caps in muted ink, the one place the site allows them
 - Must stay visually consistent with the neutraleye-web design system
 
 ---
