@@ -1,35 +1,32 @@
-# NeutralEye — Chrome Extension
+# NeutralEye Chrome extension
 
-## Overview
-The NeutralEye Extension allows users to run framing analysis directly while browsing articles in Chrome.
+NeutralEye helps readers examine how an article frames a story through its tone, sourcing, emphasis, and omissions. This repository contains the Chrome extension. The companion [web application and analysis API](https://github.com/laithmunir9/neutraleye-web) power its results.
 
-## Role in the System
-This repository handles the browser-side experience, including content extraction and result display.  
-It communicates with the Extension Backend for analysis.
+[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/neutraleye-bias-checker/fdkachmcdaebefhpkpjapoglbiakoffe) · [Use the web app](https://tryneutraleye.com)
 
-## How It Works
-- User clicks “Analyze” in the extension popup
-- The extension extracts visible page content
-- Content is sent to the backend API
-- Results are returned and displayed in the popup
+## How it works
 
-## Tech Stack
-- JavaScript
-- Chrome Extension (Manifest V3)
-- Marked.js
+1. Open an article and choose **Analyze** in the extension popup.
+2. The extension extracts readable text and basic article metadata from the active tab.
+3. It sends that content to the NeutralEye web API and displays a framing analysis with quoted evidence and suggested sources for cross-reading.
 
-## Setup
-1. Open Chrome and go to `chrome://extensions/`
-2. Enable Developer Mode
-3. Click “Load unpacked”
-4. Select this folder
+Analysis works without an account. You can sign in with a NeutralEye account; signed-in analyses may be saved to that account by the web service. The extension does not analyze pages in the background. Its `activeTab` and `scripting` permissions let it read the current page when you start an analysis, and `storage` keeps your sign-in session on your device.
 
-## Development Workflow
-- Edit files
-- Reload extension in Chrome
-- Test on live pages
+## Run locally
 
-## Notes
-- Runs only when user activates it
-- Does not track browsing activity
-- Only processes visible content
+1. In Chrome, open `chrome://extensions` and enable **Developer mode**.
+2. Choose **Load unpacked** and select this repository's directory.
+3. Open an article, select the NeutralEye icon, and choose **Analyze**.
+
+The unpacked extension uses `https://tryneutraleye.com` for its API. It does not include an API key or a local backend. After changing extension files, reload it on `chrome://extensions`.
+
+## Development
+
+This is a Manifest V3 extension written in plain JavaScript. `content.js` extracts article text; `popup.js` handles sign-in, requests, and rendering. The popup sanitizes the returned Markdown before displaying it.
+
+```bash
+npm ci
+npm run verify
+```
+
+`verify` runs lint, tests, and manifest validation. See [CHANGELOG.md](CHANGELOG.md) for release notes and the [extension privacy policy](https://tryneutraleye.com/extension-privacy) for data handling.
