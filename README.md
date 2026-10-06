@@ -34,7 +34,7 @@ npm run verify
 ## Third-party assets
 
 - [Marked 15.0.12](marked.min.js) is MIT licensed; its full license is in [licenses/marked-LICENSE.md](licenses/marked-LICENSE.md).
-- [DOMPurify 3.4.10](purify.min.js) is dual licensed under Apache 2.0 and MPL 2.0; its full license text is in [licenses/DOMPurify-LICENSE](licenses/DOMPurify-LICENSE).
+- [DOMPurify 3.4.10](purify.min.js) is dual licensed under [Apache 2.0](licenses/DOMPurify-LICENSE) and [MPL 2.0](licenses/DOMPurify-LICENSE-MPL).
 - [Source Serif 4](fonts/SourceSerif4-latin.woff2) is licensed under the SIL Open Font License 1.1; its license is in [fonts/OFL.txt](fonts/OFL.txt).
 
 Include these license files with packaged copies of the extension.
