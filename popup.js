@@ -21,6 +21,51 @@ function isValidAnalysisResponse(res, data) {
   return Boolean(res.ok && data.result);
 }
 
+// ── Evidence marks ───────────────────────────────────────────────────────────
+// The API renders each flagged passage as a list item, `"<quote>": <reason>`,
+// under an **Examples** heading. On the website the same evidence is drawn
+// with the annotation mark (tint plus a rule on the baseline) and a note under
+// it, so the popup draws it the same way. Built with DOM nodes and
+// textContent, never innerHTML, so model output cannot inject markup. Items
+// that do not match the shape are left exactly as rendered.
+const REASON_LABELS = {
+  framing: "Framing",
+  language: "Loaded wording",
+  source: "Source imbalance",
+  attribution: "Attribution gaps",
+};
+
+function markEvidence(container) {
+  if (!container) return 0;
+  let marked = 0;
+  const headings = [...container.querySelectorAll("strong")].filter(
+    (el) => el.textContent.trim().toLowerCase() === "examples"
+  );
+  for (const heading of headings) {
+    const block = heading.closest("p") || heading;
+    const list = block.nextElementSibling;
+    if (!list || list.tagName !== "UL") continue;
+    list.classList.add("evidence-list");
+    for (const item of list.querySelectorAll(":scope > li")) {
+      const match = item.textContent.trim().match(/^["“](.+)["”]\s*:\s*([\s\S]*)$/);
+      if (!match) continue;
+      const [, quote, reason] = match;
+      const reasonKey = reason.trim().toLowerCase();
+      const mark = document.createElement("mark");
+      mark.className = "annotation";
+      mark.textContent = quote.trim();
+      const note = document.createElement("span");
+      note.className = "evidence-note";
+      note.textContent = REASON_LABELS[reasonKey] || reason.trim();
+      item.textContent = "";
+      item.classList.add("evidence-item");
+      item.append(mark, note);
+      marked += 1;
+    }
+  }
+  return marked;
+}
+
 // ── Token refresh outcomes ───────────────────────────────────────────────────
 // A failed refresh is not one thing. Collapsing every failure into "signed out"
 // wipes a perfectly good session whenever the auth backend hiccups, so the three
@@ -71,8 +116,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const resultText      = document.getElementById("result-text");
   const resultBox       = document.getElementById("result-box");
   const loading         = document.getElementById("loading");
-  const historyNudge    = document.getElementById("history-nudge");
-  const savedIndicator  = document.getElementById("saved-indicator");
+  const signInLink      = document.getElementById("sign-in-link");
 
   const userRow         = document.getElementById("user-row");
   const userEmailEl     = document.getElementById("user-email-display");
@@ -92,13 +136,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     userEmailEl.textContent = email;
     userRow.style.display = "flex";
     loginForm.style.display = "none";
-    historyNudge.style.display = "none";
+    signInLink.style.display = "none";
   }
 
   function showLoggedOut() {
     userRow.style.display = "none";
     loginForm.style.display = "none";
-    historyNudge.style.display = "block";
+    signInLink.style.display = "inline";
   }
 
   // Load auth state from storage, refreshing the token if it's expired or nearly so
@@ -150,7 +194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     loginEmail.value = "";
     loginPassword.value = "";
     loginError.style.display = "none";
-    historyNudge.style.display = "block";
+    signInLink.style.display = "inline";
   });
 
   loginSubmit.addEventListener("click", handleLogin);
@@ -215,9 +259,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     resultBox.style.display = "none";
   });
 
-  // ── Nudge click → show login form (nudge stays visible until login succeeds)
-  historyNudge.addEventListener("click", () => {
-    historyNudge.style.display = "none";
+  // ── "Sign in" → show the login form
+  signInLink.addEventListener("click", () => {
+    signInLink.style.display = "none";
     loginForm.style.display = "block";
     loginEmail.focus();
   });
@@ -226,8 +270,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   analyzeBtn.addEventListener("click", () => {
     resultText.innerHTML = "";
     resultBox.style.display = "none";
-    historyNudge.style.display = "none";
-    savedIndicator.style.display = "none";
+    signInLink.style.display = "none";
     loading.style.display = "block";
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -307,20 +350,19 @@ document.addEventListener("DOMContentLoaded", async () => {
               resultBox.style.display = "block";
 
               resultBox.querySelectorAll("a").forEach((link) => link.setAttribute("target", "_blank"));
+              markEvidence(resultText);
 
-              // If the server rejected our token, clear it and show the nudge
+              // If the server rejected our token, clear it and offer sign-in again
               if (data.tokenExpired) {
                 chrome.storage?.local?.remove(["accessToken", "refreshToken", "userEmail", "expiresAt"]);
                 currentToken = null;
                 showLoggedOut();
               }
 
-              // Show nudge if not logged in, or saved indicator if logged in
-              if (!currentToken) {
-                historyNudge.style.display = "block";
-              } else if (data.saved) {
-                savedIndicator.style.display = "block";
-              }
+              // Reads are still saved to the account server-side (data.saved),
+              // but the site has no history page at the moment, so the popup
+              // no longer promises one. Signed-out users get the sign-in link back.
+              if (!currentToken) signInLink.style.display = "inline";
             } catch {
               loading.style.display = "none";
               resultText.innerHTML = "⚠️ Couldn't run the analysis. Try again in a moment.";
