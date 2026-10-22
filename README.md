@@ -2,7 +2,7 @@
 
 NeutralEye helps readers examine how an article frames a story through its tone, sourcing, emphasis, and omissions. This repository contains the Chrome extension. The companion [web application and analysis API](https://github.com/laithmunir9/neutraleye-web) power its results.
 
-[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/neutraleye-bias-checker/fdkachmcdaebefhpkpjapoglbiakoffe) · [Use the web app](https://tryneutraleye.com)
+[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/neutraleye/fdkachmcdaebefhpkpjapoglbiakoffe) · [Use the web app](https://tryneutraleye.com)
 
 ## How it works
 

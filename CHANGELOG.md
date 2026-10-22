@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.5 — 2026-10-22
+
+- New logo: serif N icon matching the website
+- Extension name shortened to NeutralEye
+
 ## 1.1.4 — 2026-10-03
 
 - New look to match the redesigned website: Source Serif type, the result on a white sheet, and an ink Analyze button
