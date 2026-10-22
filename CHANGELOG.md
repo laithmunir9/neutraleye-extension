@@ -4,6 +4,7 @@
 
 - New logo: serif N icon matching the website
 - Extension name shortened to NeutralEye
+- Each marked passage now explains why it was marked, in the same words the website uses
 
 ## 1.1.4 — 2026-10-03
 

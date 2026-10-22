@@ -28,11 +28,15 @@ function isValidAnalysisResponse(res, data) {
 // it, so the popup draws it the same way. Built with DOM nodes and
 // textContent, never innerHTML, so model output cannot inject markup. Items
 // that do not match the shape are left exactly as rendered.
-const REASON_LABELS = {
-  framing: "Framing",
-  language: "Loaded wording",
-  source: "Source imbalance",
-  attribution: "Attribution gaps",
+//
+// The API sends only the reason's category, so the note's label and sentence
+// come from here. They mirror driverLabelFromReason and explanationFromReason
+// in the web repo's src/lib/normalizeAiResult.js; keep the wording in step.
+const REASONS = {
+  framing: { label: "Framing", explanation: "Selective emphasis or omission changes the reader's interpretation." },
+  language: { label: "Loaded wording", explanation: "Loaded or emotive wording shifts how the claim is perceived." },
+  source: { label: "Source imbalance", explanation: "The sourcing appears one-sided or lacks meaningful counterbalance." },
+  attribution: { label: "Attribution gaps", explanation: "Claims are presented with weak attribution or unclear sourcing." },
 };
 
 function markEvidence(container) {
@@ -54,9 +58,19 @@ function markEvidence(container) {
       const mark = document.createElement("mark");
       mark.className = "annotation";
       mark.textContent = quote.trim();
+      const known = REASONS[reasonKey];
       const note = document.createElement("span");
       note.className = "evidence-note";
-      note.textContent = REASON_LABELS[reasonKey] || reason.trim();
+      const label = document.createElement("span");
+      label.className = "evidence-label";
+      label.textContent = known?.label || reason.trim();
+      note.append(label);
+      if (known) {
+        const explanation = document.createElement("span");
+        explanation.className = "evidence-explanation";
+        explanation.textContent = known.explanation;
+        note.append(explanation);
+      }
       item.textContent = "";
       item.classList.add("evidence-item");
       item.append(mark, note);

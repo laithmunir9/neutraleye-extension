@@ -389,3 +389,9 @@ mark.annotation {
   font-size: 12.5px;
   color: var(--muted);
 }
+
+.evidence-label {
+  display: block;
+  font-weight: 600;
+  color: var(--ink);
+}

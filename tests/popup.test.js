@@ -253,8 +253,25 @@ describe("markEvidence", () => {
       "The council rammed through its bloated budget",
       "Critics were brushed aside",
     ]);
-    const notes = [...box.querySelectorAll(".evidence-note")].map((n) => n.textContent);
-    expect(notes).toEqual(["Loaded wording", "Framing"]);
+    const labels = [...box.querySelectorAll(".evidence-note .evidence-label")].map((n) => n.textContent);
+    expect(labels).toEqual(["Loaded wording", "Framing"]);
+  });
+
+  it("explains each reason in the same words the website uses", () => {
+    const box = render(RENDERED);
+    markEvidence(box);
+    const explanations = [...box.querySelectorAll(".evidence-note .evidence-explanation")].map((n) => n.textContent);
+    expect(explanations).toEqual([
+      "Loaded or emotive wording shifts how the claim is perceived.",
+      "Selective emphasis or omission changes the reader's interpretation.",
+    ]);
+  });
+
+  it("keeps an unrecognised reason as its label, with no invented explanation", () => {
+    const box = render(`<p><strong>Examples</strong></p><ul><li>&quot;A passage&quot;: Loaded Phrasing</li></ul>`);
+    markEvidence(box);
+    expect(box.querySelector(".evidence-label").textContent).toBe("Loaded Phrasing");
+    expect(box.querySelector(".evidence-explanation")).toBeNull();
   });
 
   it("leaves items that are not quotes, and lists under other headings, untouched", () => {
