@@ -267,6 +267,17 @@ describe("markEvidence", () => {
     ]);
   });
 
+  it("shows the note the API wrote for a passage under its label", () => {
+    const box = render(`<p><strong>Examples</strong></p><ul><li>&quot;rammed through a punishing hike&quot;: Loaded wording: 'Rammed through' says the vote was forced.</li><li>&quot;officials said little&quot;: Only one side of the vote is asked to explain it.</li></ul>`);
+    expect(markEvidence(box)).toBe(2);
+    const [first, second] = box.querySelectorAll(".evidence-note");
+    expect(first.querySelector(".evidence-label").textContent).toBe("Loaded wording");
+    expect(first.querySelector(".evidence-explanation").textContent).toBe("'Rammed through' says the vote was forced.");
+    // A note with no known label is shown as a note, not as a bold label.
+    expect(second.querySelector(".evidence-label")).toBeNull();
+    expect(second.querySelector(".evidence-explanation").textContent).toBe("Only one side of the vote is asked to explain it.");
+  });
+
   it("keeps an unrecognised reason as its label, with no invented explanation", () => {
     const box = render(`<p><strong>Examples</strong></p><ul><li>&quot;A passage&quot;: Loaded Phrasing</li></ul>`);
     markEvidence(box);

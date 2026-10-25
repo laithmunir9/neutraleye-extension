@@ -29,15 +29,32 @@ function isValidAnalysisResponse(res, data) {
 // textContent, never innerHTML, so model output cannot inject markup. Items
 // that do not match the shape are left exactly as rendered.
 //
-// The API sends only the reason's category, so the note's label and sentence
-// come from here. They mirror driverLabelFromReason and explanationFromReason
-// in the web repo's src/lib/normalizeAiResult.js; keep the wording in step.
+// Since October 2026 the API sends "Label: note", the label and a sentence
+// written for that passage. Older results send only the category, and then
+// the label and a general sentence come from here. They mirror
+// driverLabelFromReason and explanationFromReason in the web repo's
+// src/lib/normalizeAiResult.js; keep the wording in step.
 const REASONS = {
   framing: { label: "Framing", explanation: "Selective emphasis or omission changes the reader's interpretation." },
   language: { label: "Loaded wording", explanation: "Loaded or emotive wording shifts how the claim is perceived." },
   source: { label: "Source imbalance", explanation: "The sourcing appears one-sided or lacks meaningful counterbalance." },
   attribution: { label: "Attribution gaps", explanation: "Claims are presented with weak attribution or unclear sourcing." },
 };
+
+const REASON_BY_LABEL = Object.fromEntries(Object.values(REASONS).map((r) => [r.label.toLowerCase(), r]));
+
+/** "language" | "Loaded wording: note" | "a note" → { label, explanation } */
+function readReason(reason) {
+  const text = reason.trim();
+  const known = REASONS[text.toLowerCase()];
+  if (known) return known;
+  const split = text.match(/^([^:]{1,40}):\s+([\s\S]+)$/);
+  const named = split && REASON_BY_LABEL[split[1].trim().toLowerCase()];
+  if (named) return { label: named.label, explanation: split[2].trim() };
+  // A sentence on its own is a note without a label; a short phrase is a label.
+  if (text.split(/\s+/).length > 4) return { label: "", explanation: text };
+  return { label: text, explanation: "" };
+}
 
 function markEvidence(container) {
   if (!container) return 0;
@@ -54,21 +71,22 @@ function markEvidence(container) {
       const match = item.textContent.trim().match(/^["“](.+)["”]\s*:\s*([\s\S]*)$/);
       if (!match) continue;
       const [, quote, reason] = match;
-      const reasonKey = reason.trim().toLowerCase();
       const mark = document.createElement("mark");
       mark.className = "annotation";
       mark.textContent = quote.trim();
-      const known = REASONS[reasonKey];
+      const { label: labelText, explanation: explanationText } = readReason(reason);
       const note = document.createElement("span");
       note.className = "evidence-note";
-      const label = document.createElement("span");
-      label.className = "evidence-label";
-      label.textContent = known?.label || reason.trim();
-      note.append(label);
-      if (known) {
+      if (labelText) {
+        const label = document.createElement("span");
+        label.className = "evidence-label";
+        label.textContent = labelText;
+        note.append(label);
+      }
+      if (explanationText) {
         const explanation = document.createElement("span");
         explanation.className = "evidence-explanation";
-        explanation.textContent = known.explanation;
+        explanation.textContent = explanationText;
         note.append(explanation);
       }
       item.textContent = "";

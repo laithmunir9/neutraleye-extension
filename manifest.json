@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NeutralEye",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Shows how a news article frames its story: tone, sourcing, and omission. See multiple perspectives before you finish reading.",
   "permissions": ["activeTab", "scripting", "storage"],
   "background": {

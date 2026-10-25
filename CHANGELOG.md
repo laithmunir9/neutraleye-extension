@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.6 — 2026-10-25
+
+- Each marked passage now shows a note written for that passage, not a general line for its kind
+- Opinion pieces with nothing flagged say they argue their side openly, instead of "No significant framing detected" (server side, so earlier versions get it too)
+- Smaller result text, so a full result fits the popup better
+
 ## 1.1.5 — 2026-10-22
 
 - New logo: serif N icon matching the website
